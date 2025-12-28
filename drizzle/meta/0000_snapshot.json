@@ -1,0 +1,113 @@
+{
+	"id": "da955fe6-fbc7-45db-87b2-7105cf30eb38",
+	"prevId": "00000000-0000-0000-0000-000000000000",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.prs": {
+			"name": "prs",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"identity": {
+						"type": "always",
+						"name": "prs_id_seq",
+						"schema": "public",
+						"increment": "1",
+						"startWith": "1",
+						"minValue": "1",
+						"maxValue": "2147483647",
+						"cache": "1",
+						"cycle": false
+					}
+				},
+				"org": {
+					"name": "org",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"repo": {
+					"name": "repo",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"username": {
+					"name": "username",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"countPRsCreated": {
+					"name": "countPRsCreated",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"countPRsReviewed": {
+					"name": "countPRsReviewed",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdPRs": {
+					"name": "createdPRs",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'[]'"
+				},
+				"reviewedPRs": {
+					"name": "reviewedPRs",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'[]'"
+				},
+				"date": {
+					"name": "date",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created": {
+					"name": "created",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated": {
+					"name": "updated",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}
