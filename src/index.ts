@@ -34,7 +34,12 @@ program
 	.argument("[repo]", "Repo name")
 	.argument("[usernames...]", "User names")
 	.option("--debug", "Debug mode (shows traceback)")
+	.option("--force-refresh", "Ignore any previously stored data")
 	.option("--days-back <number>", "Number of days ago to look back")
+	.option(
+		"--sleep-seconds <number>",
+		"Number of seconds to sleep between requests",
+	)
 	.description("Computes all PR activity by user")
 	.action((org, repo, usernames, options) => {
 		wrap(

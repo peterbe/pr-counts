@@ -1,8 +1,6 @@
 import { getOctokit } from "./github-utils";
+import { hasData } from "./has-data";
 import { upsertPR } from "./upsert";
-
-// const DB = Bun.file("past-queries.json");
-const _DB_FILE = "past-queries.json";
 
 export async function byUsers({
 	usernames,
@@ -10,20 +8,42 @@ export async function byUsers({
 	repo,
 	includeDrafts = false,
 	daysBack = 1,
+	forceRefresh = false,
+	sleepSeconds = 0,
 }: {
 	usernames: string[];
 	org: string;
 	repo: string;
 	includeDrafts?: boolean;
-	daysBack?: number;
+	daysBack?: number | string;
+	forceRefresh?: boolean;
+	sleepSeconds?: number | string;
 }) {
-	// const octokit = getOctokit();
+	sleepSeconds = Number(sleepSeconds);
+	daysBack = Number(daysBack);
 
 	const since = getPastDate(daysBack ?? 1); // e.g., last 1 days
 
-	for (const username of usernames) {
-		for (const created of dateRange(since)) {
-			// console.log([username, created]);
+	for (const created of dateRange(since)) {
+		for (const username of usernames) {
+			let has = false;
+			if (!forceRefresh) {
+				has = await hasData({
+					date: created,
+					org,
+					repo,
+					username,
+				});
+			}
+			if (has) {
+				console.log("Skipping, already have data for", [
+					formatDate(created),
+					username,
+				]);
+				continue;
+			}
+
+			console.log("Fetching data for", [formatDate(created), username]);
 			await byUserByDate({
 				username,
 				created,
@@ -31,8 +51,22 @@ export async function byUsers({
 				repo,
 				includeDrafts,
 			});
+			if (sleepSeconds > 0) {
+				console.log("Sleeping for", sleepSeconds, "seconds...");
+				await new Promise((resolve) =>
+					setTimeout(resolve, sleepSeconds * 1000),
+				);
+			}
 		}
 	}
+}
+
+function formatDate(date: Date): string {
+	return date.toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	});
 }
 
 async function byUserByDate({
@@ -49,15 +83,7 @@ async function byUserByDate({
 	includeDrafts?: boolean;
 }) {
 	const octokit = getOctokit();
-	// const countPRsCreated = {
-	// 	open: 0,
-	// 	merged: 0,
-	// };
-	// for (const state of Object.keys(
-	// 	countPRsCreated,
-	// ) as (keyof typeof countPRsCreated)[]) {
-	// let q = `is:pr is:${state} author:${username} org:${org} repo:${repo}`;
-	// let countPRsCreated = 0;
+
 	let q = `is:pr -state:closed author:${username} org:${org} repo:${repo}`;
 	if (!includeDrafts) {
 		q += " draft:false";
@@ -78,18 +104,6 @@ async function byUserByDate({
 		"state",
 		"created_at",
 	]);
-
-	// countPRsCreated = data.total_count;
-	// }
-	// console.log("");
-	// console.log(
-	// 	"On",
-	// 	created.toISOString().split("T")[0],
-	// 	// `(${daysAgo} days ago)`,
-	// );
-	// console.log(`Summary for ${username} in ${org}/${repo}:`);
-	// // console.log(`- Open PRs: ${countPRsCreated.open}`);
-	// console.log(`- Created PRs: ${countPRsCreated}`);
 
 	q = `is:pr -author:${username} org:${org} repo:${repo} reviewed-by:${username}`;
 	if (!includeDrafts) {
@@ -114,18 +128,13 @@ async function byUserByDate({
 		"state",
 		"created_at",
 	]);
-	// console.log(`- Reviewed PRs: ${countPRsReviewed}`);
-
-	// console.log("");
 
 	await dumpResults(
 		{
 			username,
 			repo,
 			org,
-			// includeDrafts,
-			created, //since.toISOString().split("T")[0] as string,
-			// today: new Date().toISOString().split("T")[0] as string,
+			created,
 		},
 		{
 			countPRsCreated,
@@ -167,10 +176,6 @@ function dateRange(startDate: Date): Date[] {
 function addCreatedParam(since: Date): string {
 	const sinceStr = since.toISOString().split("T")[0];
 	return `created:${sinceStr}`;
-	// const next = new Date(since);
-	// next.setDate(next.getDate() + 1);
-	// const nextStr = next.toISOString().split("T")[0];
-	// return `created:>=${sinceStr} created:<${nextStr}`;
 }
 
 function getPastDate(daysAgo: number): Date {
@@ -194,30 +199,10 @@ async function dumpResults(
 		org: params.org as string,
 		repo: params.repo as string,
 		username: params.username as string,
-		countPRsCreated: results.countPRsCreated,
-		countPRsReviewed: results.countPRsReviewed,
-		createdPRs: results.createdPRs,
-		reviewedPRs: results.reviewedPRs,
+		count_prs_created: results.countPRsCreated,
+		count_prs_reviewed: results.countPRsReviewed,
+		created_prs: results.createdPRs,
+		reviewed_prs: results.reviewedPRs,
 		date: params.created as Date,
 	});
-	// console.log("---- PARAMS ----");
-	// console.log(params);
-	// console.log("---- RESULTS ----");
-	// console.log(results);
-	// // console.log("\n--- DUMP ---");
-	// const key = Object.values(params).join("|");
-	// // console.log(`KEY: ${key}`);
-	// // console.log("PARAMS:", JSON.stringify(params, null, 2));
-	// // console.log("RESULTS:", JSON.stringify(results, null, 2));
-	// const DB = Bun.file(DB_FILE);
-	// const exists = await DB.exists();
-	// if (!exists) {
-	// 	console.log("Creating new DB file:", DB);
-	// }
-	// // console.log("DB exists:", exists);
-	// const store = exists ? await DB.json() : {};
-	// // console.log("STORE:", store);
-	// store[key] = { params, results };
-	// await Bun.write(DB_FILE, JSON.stringify(store, null, 2));
-	// // await DB.write(JSON.stringify(store, null, 2));
 }
