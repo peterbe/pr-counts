@@ -1,9 +1,6 @@
 # https://github.com/casey/just
 # https://just.systems/
 
-dev:
-    bun run dev -- --port 4001
-
 dev-with-proxy:
     VITE_API_TARGET=https://admin.peterbe.com bun run dev -- --port 4001
 
@@ -41,17 +38,11 @@ install:
 outdated:
     bun outdated
 
-test-playwright:
-    curl -s http://localhost:3000 > /dev/null
-    PLAYWRIGHT_BASE_URL=http://localhost:3000 bunx playwright test
-
-playwright-codegen:
-    bunx playwright codegen
-
 test-manifest:
     bun run test-manifest -- http://localhost:3000
 
-test: test-playwright test-manifest
+test:
+    bun run test
 
 upgrade:
     bun update --interactive
@@ -63,3 +54,9 @@ make-migrations:
 
 migrate:
     bunx drizzle-kit migrate
+
+scrape:
+    bun run packages/scraper/src/index.ts by-config peterbe-config.json
+
+dev:
+    bun run --filter webapp dev

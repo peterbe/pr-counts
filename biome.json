@@ -1,4 +1,5 @@
 {
+	"root": true,
 	"$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
 	"vcs": {
 		"enabled": false,
@@ -6,7 +7,17 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": [
+			"**",
+			"!.husky",
+			"!out",
+			"!public",
+			"!bun.lock",
+			"!.github",
+			"!dummy*",
+			"!packages/webapp/dist"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -15,7 +26,10 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious": {
+				"noUnknownAtRules": "off"
+			}
 		}
 	},
 	"javascript": {

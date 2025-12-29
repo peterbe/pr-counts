@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import * as v from "valibot";
 import { byUsers } from "./by-user";
 
@@ -33,7 +34,7 @@ export async function byUsersByConfig({
 	daysBack = Number(daysBack);
 
 	const configfileFile = Bun.file(configfile);
-	console.log(`Loading config from ${configfile}`);
+	console.log(`Loading config from ${resolve(configfile)}`);
 	if (!(await configfileFile.exists())) {
 		throw new Error(`Config file ${configfile} does not exist`);
 	}
