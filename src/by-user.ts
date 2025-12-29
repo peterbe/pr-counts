@@ -1,3 +1,4 @@
+import { formatDate } from "./date-formatter";
 import { getOctokit } from "./github-utils";
 import { hasData } from "./has-data";
 import { upsertPR } from "./upsert";
@@ -80,7 +81,7 @@ export async function byUsers({
 	}
 	console.log("Total tasks to process:", tasks.length);
 	for (const { created, username } of tasks) {
-		console.log("Fetching data for", [formatDate(created), username]);
+		console.log("Fetching data for", [created, formatDate(created), username]);
 		await byUserByDate({
 			username,
 			created,
@@ -93,14 +94,6 @@ export async function byUsers({
 			await new Promise((resolve) => setTimeout(resolve, sleepSeconds * 1000));
 		}
 	}
-}
-
-function formatDate(date: Date): string {
-	return date.toLocaleDateString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
 }
 
 async function byUserByDate({
