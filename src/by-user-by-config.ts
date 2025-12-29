@@ -20,12 +20,14 @@ export async function byUsersByConfig({
 	daysBack = 1,
 	forceRefresh = false,
 	sleepSeconds = 0,
+	date = "",
 }: {
 	configfile: string;
 	includeDrafts?: boolean;
 	daysBack?: number | string;
 	forceRefresh?: boolean;
 	sleepSeconds?: number | string;
+	date?: string;
 }) {
 	sleepSeconds = Number(sleepSeconds);
 	daysBack = Number(daysBack);
@@ -47,8 +49,8 @@ export async function byUsersByConfig({
 		daysBack,
 		forceRefresh,
 		sleepSeconds,
+		date,
 	});
-	// }
 }
 
 function getConfigFromRaw(raw: unknown): ConfigData {

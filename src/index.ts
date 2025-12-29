@@ -15,6 +15,7 @@ program
 	.argument("[username]", "User name")
 	.option("--debug", "Debug mode (shows traceback)")
 	.option("--days-ago <number>", "Number of days ago to look back")
+	.option("--date <date>", "Specific date to process")
 	.description("Computes all PR activity by user")
 	.action((org, repo, username, options) => {
 		wrap(
@@ -36,6 +37,7 @@ program
 	.option("--debug", "Debug mode (shows traceback)")
 	.option("--force-refresh", "Ignore any previously stored data")
 	.option("--days-back <number>", "Number of days ago to look back")
+	.option("--date <date>", "Specific date to process")
 	.option(
 		"--sleep-seconds <number>",
 		"Number of seconds to sleep between requests",
@@ -59,6 +61,7 @@ program
 	.option("--debug", "Debug mode (shows traceback)")
 	.option("--force-refresh", "Ignore any previously stored data")
 	.option("--days-back <number>", "Number of days ago to look back")
+	.option("--date <date>", "Specific date to process")
 	.option(
 		"--sleep-seconds <number>",
 		"Number of seconds to sleep between requests",
