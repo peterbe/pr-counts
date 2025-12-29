@@ -2,8 +2,13 @@ import { getOctokit } from "./github-utils";
 import { hasData } from "./has-data";
 import { upsertPR } from "./upsert";
 
+type UserConfig = {
+	username: string;
+	startDate?: string;
+};
+
 export async function byUsers({
-	usernames,
+	users,
 	org,
 	repo,
 	includeDrafts = false,
@@ -11,7 +16,7 @@ export async function byUsers({
 	forceRefresh = false,
 	sleepSeconds = 0,
 }: {
-	usernames: string[];
+	users: (string | UserConfig)[];
 	org: string;
 	repo: string;
 	includeDrafts?: boolean;
@@ -25,7 +30,22 @@ export async function byUsers({
 	const since = getPastDate(daysBack ?? 1); // e.g., last 1 days
 
 	for (const created of dateRange(since)) {
-		for (const username of usernames) {
+		for (const usernameOrConfig of users) {
+			const username =
+				typeof usernameOrConfig === "string"
+					? usernameOrConfig
+					: usernameOrConfig.username;
+			const startDate =
+				typeof usernameOrConfig === "string"
+					? undefined
+					: usernameOrConfig.startDate;
+			if (startDate) {
+				const startDateObj = new Date(startDate);
+				if (created < startDateObj) {
+					console.log("Skipping date before start date for", username);
+					continue;
+				}
+			}
 			let has = false;
 			if (!forceRefresh) {
 				has = await hasData({

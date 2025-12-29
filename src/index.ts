@@ -1,6 +1,6 @@
 import { Command } from "commander";
-// import { byTeam } from "./by-team";
 import { byUsers } from "./by-user";
+import { byUsersByConfig } from "./by-user-by-config";
 
 const program = new Command();
 program
@@ -41,12 +41,33 @@ program
 		"Number of seconds to sleep between requests",
 	)
 	.description("Computes all PR activity by user")
-	.action((org, repo, usernames, options) => {
+	.action((org, repo, users, options) => {
 		wrap(
 			byUsers({
 				org,
 				repo,
-				usernames,
+				users,
+				...options,
+			}),
+			options.debug,
+		);
+	});
+
+program
+	.command("by-config")
+	.argument("[configfile]", "Config file (e.g. config.json)")
+	.option("--debug", "Debug mode (shows traceback)")
+	.option("--force-refresh", "Ignore any previously stored data")
+	.option("--days-back <number>", "Number of days ago to look back")
+	.option(
+		"--sleep-seconds <number>",
+		"Number of seconds to sleep between requests",
+	)
+	.description("Computes all PR activity by users in config file")
+	.action((configfile, options) => {
+		wrap(
+			byUsersByConfig({
+				configfile,
 				...options,
 			}),
 			options.debug,
