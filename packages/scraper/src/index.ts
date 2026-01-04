@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { byUsers } from "./by-user";
 import { byUsersByConfig } from "./by-user-by-config";
+import { exportJson } from "./exportjson";
 
 const program = new Command();
 program
@@ -71,6 +72,21 @@ program
 		wrap(
 			byUsersByConfig({
 				configfile,
+				...options,
+			}),
+			options.debug,
+		);
+	});
+
+program
+	.command("export-json")
+	.argument("[destination]", "Where to dump the JSON files")
+	.description("Dumps all stored data as JSON to disk")
+	.option("--debug", "Debug mode (shows traceback)")
+	.action((destination, options) => {
+		wrap(
+			exportJson({
+				destination,
 				...options,
 			}),
 			options.debug,

@@ -1,6 +1,13 @@
 import { and, eq, gte, lt } from "drizzle-orm";
 import { db } from "./db";
-import { type InsertPR, prsTable, type SelectPR } from "./schema";
+import {
+	type InsertPR,
+	type InsertUser,
+	prsTable,
+	type SelectPR,
+	type SelectUser,
+	users,
+} from "./schema";
 
 export async function upsertPR(data: InsertPR) {
 	// console.debug("UPSERT", [data.date, data.org, data.repo, data.username]);
@@ -22,7 +29,6 @@ export async function upsertPR(data: InsertPR) {
 		);
 	for (const row of await query) {
 		const { id } = row;
-		// console.debug("UPDATING...", id);
 		await updatePR(id, {
 			...data,
 			updated: new Date(),
@@ -30,7 +36,6 @@ export async function upsertPR(data: InsertPR) {
 		return;
 	}
 
-	// console.debug("INSERTING...");
 	await insertPR({
 		...data,
 		updated: new Date(),
@@ -47,4 +52,36 @@ async function updatePR(
 
 async function insertPR(data: InsertPR) {
 	await db.insert(prsTable).values(data);
+}
+
+export async function upsertUser(
+	username: string,
+	userData: Record<string, string | number | boolean>,
+) {
+	const query = db.select().from(users).where(eq(users.username, username));
+	for (const row of await query) {
+		const { id } = row;
+		await updateUser(id, {
+			userdata: userData as InsertUser["userdata"],
+			updated: new Date(),
+		});
+		return;
+	}
+	await insertUser({
+		username,
+		userdata: userData as InsertUser["userdata"],
+		updated: new Date(),
+		created: new Date(),
+	});
+}
+
+async function updateUser(
+	id: SelectUser["id"],
+	data: Partial<Omit<SelectUser, "id">>,
+) {
+	await db.update(users).set(data).where(eq(users.id, id));
+}
+
+async function insertUser(data: InsertUser) {
+	await db.insert(users).values(data);
 }

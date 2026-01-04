@@ -50,13 +50,18 @@ upgrade:
 
 
 make-migrations:
-    bunx drizzle-kit generate
+    cd packages/scraper && bunx drizzle-kit generate
 
 migrate:
-    bunx drizzle-kit migrate
+    cd packages/scraper &&bunx drizzle-kit migrate
 
 scrape:
-    bun run packages/scraper/src/index.ts by-config peterbe-config.json
+    bun run packages/scraper/src/index.ts by-config peterbe-config.json --days-back 10
 
-dev:
+export-db:
+    bun run packages/scraper/src/index.ts export-json packages/webapp/public/exports
+
+export: export-db
+
+dev: export-db
     bun run --filter webapp dev

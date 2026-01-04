@@ -1,7 +1,7 @@
 import { formatDate } from "./date-formatter";
 import { getOctokit } from "./github-utils";
 import { hasData } from "./has-data";
-import { upsertPR } from "./upsert";
+import { upsertPR, upsertUser } from "./upsert";
 
 type UserConfig = {
 	username: string;
@@ -131,6 +131,28 @@ async function byUserByDate({
 		"state",
 		"created_at",
 	]);
+
+	if (responseCreated.data.items.length > 0) {
+		const firstPR = responseCreated.data.items[0];
+		if (firstPR) {
+			const userData: Record<string, string | number | boolean> = {};
+			const keepKeys = new Set([
+				"login",
+				"html_url",
+				"site_admin",
+				"avatar_url",
+			]);
+			for (const [key, value] of Object.entries(firstPR.user || {})) {
+				if (value === null || value === undefined) {
+					continue;
+				}
+				if (keepKeys.has(key)) {
+					userData[key] = value;
+				}
+			}
+			await upsertUser(username, userData);
+		}
+	}
 
 	q = `is:pr -author:${username} org:${org} repo:${repo} reviewed-by:${username}`;
 	if (!includeDrafts) {

@@ -40,15 +40,20 @@ import "@mantine/charts/styles.css";
 
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router";
 import { router } from "./routes";
+
+const queryClient = new QueryClient();
 
 export default function App() {
 	return (
 		<MantineProvider>
 			<Notifications />
 			{/* <Shell /> */}
-			<RouterProvider router={router} />
+			<QueryClientProvider client={queryClient}>
+				<RouterProvider router={router} />
+			</QueryClientProvider>
 		</MantineProvider>
 	);
 }

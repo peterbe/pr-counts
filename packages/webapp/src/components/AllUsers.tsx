@@ -1,12 +1,13 @@
-import { AppShell, Burger, Group } from "@mantine/core";
+import { AppShell, Group } from "@mantine/core";
 import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
+import { AllUsersList } from "./AllUsersList";
 import { BasicHeader } from "./BasicHeader";
-import { PRsChart } from "./PRsChart";
-import { Sidebar } from "./Sidebar";
+import { SidebarUsers } from "./SidebarUsers";
 
-export function Home() {
-	const [opened, { toggle }] = useDisclosure();
-	useDocumentTitle("PR Counts Dashboard");
+export function AllUsers() {
+	const [opened] = useDisclosure();
+
+	useDocumentTitle("All users");
 
 	return (
 		<AppShell
@@ -16,15 +17,15 @@ export function Home() {
 		>
 			<AppShell.Header>
 				<Group h="100%" px="md">
-					<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+					{/* <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" /> */}
 					<BasicHeader />
 				</Group>
 			</AppShell.Header>
 			<AppShell.Navbar p="md">
-				<Sidebar />
+				<SidebarUsers />
 			</AppShell.Navbar>
 			<AppShell.Main>
-				<PRsChart />
+				<AllUsersList />
 			</AppShell.Main>
 		</AppShell>
 	);

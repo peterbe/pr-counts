@@ -1,12 +1,16 @@
 import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
+import { useParams } from "react-router";
 import { BasicHeader } from "./BasicHeader";
-import { PRsChart } from "./PRsChart";
-import { Sidebar } from "./Sidebar";
+import { PRsByUser } from "./PRsByUser";
+import { SidebarUsers } from "./SidebarUsers";
 
-export function Home() {
+export function ByUser() {
 	const [opened, { toggle }] = useDisclosure();
-	useDocumentTitle("PR Counts Dashboard");
+	// const users = useUsers();
+	const params = useParams();
+
+	useDocumentTitle(params.username ? `PRs by @${params.username}` : "By user");
 
 	return (
 		<AppShell
@@ -21,10 +25,10 @@ export function Home() {
 				</Group>
 			</AppShell.Header>
 			<AppShell.Navbar p="md">
-				<Sidebar />
+				<SidebarUsers />
 			</AppShell.Navbar>
 			<AppShell.Main>
-				<PRsChart />
+				{params.username && <PRsByUser username={params.username} />}
 			</AppShell.Main>
 		</AppShell>
 	);

@@ -1,22 +1,22 @@
 {
-  "name": "scraper",
-  "module": "src/index.ts",
-  "type": "module",
-  "scripts": {
-    "by-config": "bun run src/index.ts by-config"
-  },
-  "devDependencies": {
-    "@types/pg": "^8.16.0",
-    "drizzle-kit": "^0.31.8"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "commander": "^14.0.2",
-    "drizzle-orm": "^0.45.1",
-    "octokit": "^5.0.5",
-    "pg": "^8.16.3",
-    "valibot": "^1.2.0"
-  }
+	"name": "scraper",
+	"module": "src/index.ts",
+	"type": "module",
+	"scripts": {
+		"by-config": "bun run src/index.ts by-config"
+	},
+	"devDependencies": {
+		"@types/pg": "^8.16.0",
+		"drizzle-kit": "^0.31.8"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"commander": "^14.0.2",
+		"drizzle-orm": "^0.45.1",
+		"octokit": "^5.0.5",
+		"pg": "^8.16.3",
+		"valibot": "^1.2.0"
+	}
 }

@@ -22,3 +22,14 @@ export const prsTable = pgTable("prs", {
 
 export type InsertPR = typeof prsTable.$inferInsert;
 export type SelectPR = typeof prsTable.$inferSelect;
+
+export const users = pgTable("users", {
+	id: integer().primaryKey().generatedAlwaysAsIdentity(),
+	username: varchar().notNull(),
+	userdata: jsonb().notNull(),
+	created: timestamp().notNull().defaultNow(),
+	updated: timestamp().notNull().defaultNow(),
+});
+
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
