@@ -7,11 +7,6 @@ export function UserSelection() {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const selectedUsers = searchParams.getAll("users");
 
-	// const [rememberedUsers, setRememberedUsers] = useLocalStorage({
-	// 	key: "user-selection",
-	// 	defaultValue: selectedUsers,
-	// });
-
 	const query = usePRCounts();
 	const data: {
 		name: string;
