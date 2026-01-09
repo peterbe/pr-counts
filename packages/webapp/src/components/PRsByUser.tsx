@@ -1,6 +1,5 @@
-import { LineChart } from "@mantine/charts";
+import { LineChart, type LineChartSeries } from "@mantine/charts";
 import {
-	Anchor,
 	Box,
 	Group,
 	LoadingOverlay,
@@ -71,6 +70,10 @@ function PRsChart({
 		key: `pr-counts:skip-last-interval:${username}`,
 		defaultValue: false,
 	});
+	const [includeAverage, setIncludeAverage] = useLocalStorage<boolean>({
+		key: `pr-counts:include-average:${username}`,
+		defaultValue: false,
+	});
 
 	const byDateLabels: Record<
 		string,
@@ -84,6 +87,11 @@ function PRsChart({
 
 	for (const rows of Object.values(data)) {
 		for (const row of rows) {
+			const dateLabel =
+				dateInterval === "byweek"
+					? getMonday(row.date)
+					: getFirstDayOfMonth(row.date);
+
 			if (
 				!(
 					row.username === username ||
@@ -92,10 +100,7 @@ function PRsChart({
 			) {
 				continue;
 			}
-			const dateLabel =
-				dateInterval === "byweek"
-					? getMonday(row.date)
-					: getFirstDayOfMonth(row.date);
+
 			if (!byDateLabels[dateLabel]) {
 				byDateLabels[dateLabel] = {
 					[row.username]: {
@@ -127,13 +132,41 @@ function PRsChart({
 		"#ab9087",
 		"#e8e6e5",
 	];
-	const series = [
+
+	if (includeAverage) {
+		for (const [dateLabel, record] of Object.entries(byDateLabels)) {
+			const created: number[] = Object.entries(record)
+				.filter(([name]) => {
+					return name === username || compareUsers.includes(name);
+				})
+				.map(([, r]) => r.count_prs_created);
+			const reviewed: number[] = Object.entries(record)
+				.filter(([name]) => {
+					return name === username || compareUsers.includes(name);
+				})
+				.map(([, r]) => r.count_prs_reviewed);
+
+			byDateLabels[dateLabel].AVERAGE = {
+				count_prs_created: Math.round(
+					created.reduce((a, b) => a + b, 0) / created.length,
+				),
+				count_prs_reviewed: Math.round(
+					reviewed.reduce((a, b) => a + b, 0) / reviewed.length,
+				),
+			};
+		}
+	}
+
+	const series: LineChartSeries[] = [
 		{ name: username, color: "blue.6" },
 		...compareUsers.map((u, index) => ({
 			name: u,
 			color: COLORS[index % COLORS.length],
 		})),
 	];
+	if (includeAverage) {
+		series.push({ name: "AVERAGE", color: "red.6", strokeDasharray: "5 5" });
+	}
 
 	const range = skipLastInterval
 		? Object.entries(byDateLabels).slice(1, -1)
@@ -185,7 +218,6 @@ function PRsChart({
 					lineChartProps={{ syncId: "byUser" }}
 					series={series}
 					curveType="monotone"
-					tooltipAnimationDuration={100}
 					withPointLabels
 					type={compareUsers.length === 0 ? "gradient" : undefined}
 					gradientStops={compareUsers.length === 0 ? gradientStops : undefined}
@@ -202,7 +234,6 @@ function PRsChart({
 					lineChartProps={{ syncId: "byUser" }}
 					series={series}
 					curveType="monotone"
-					tooltipAnimationDuration={100}
 					withPointLabels
 					type={compareUsers.length === 0 ? "gradient" : undefined}
 					gradientStops={compareUsers.length === 0 ? gradientStops : undefined}
@@ -246,6 +277,15 @@ function PRsChart({
 						onChange={(event) =>
 							setSkipLastInterval(event.currentTarget.checked)
 						}
+					/>
+				</OptionSection>
+
+				<OptionSection>
+					<Switch
+						label="Include average line"
+						checked={includeAverage}
+						disabled={compareUsers.length === 0}
+						onChange={(event) => setIncludeAverage(event.currentTarget.checked)}
 					/>
 				</OptionSection>
 			</Box>
