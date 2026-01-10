@@ -2,6 +2,7 @@ import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
 import { useParams } from "react-router";
 import { BasicHeader } from "./BasicHeader";
+import { HeaderBreadcrumbs } from "./HeaderBreadcrumbs";
 import { PRsByUser } from "./PRsByUser";
 import { SidebarUsers } from "./SidebarUsers";
 
@@ -22,6 +23,7 @@ export function ChartByUser() {
 				<Group h="100%" px="md">
 					<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 					<BasicHeader />
+					<HeaderBreadcrumbs />
 				</Group>
 			</AppShell.Header>
 			<AppShell.Navbar p="md">

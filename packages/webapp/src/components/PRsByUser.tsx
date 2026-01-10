@@ -3,7 +3,6 @@ import {
 	Box,
 	Group,
 	LoadingOverlay,
-	MultiSelect,
 	SegmentedControl,
 	Switch,
 	Title,
@@ -11,7 +10,9 @@ import {
 import { useLocalStorage } from "@mantine/hooks";
 import { getFirstDayOfMonth, getMonday } from "../date-utils";
 import { GitHubAvatar } from "./GitHubAvatar";
+import { PRsGrid } from "./PRsGrid";
 import { ServerError } from "./ServerError";
+import { UserSelect } from "./UserSelect";
 import { type PRCountsType, usePRCounts } from "./usePRCounts";
 import { useUsers } from "./useUsers";
 
@@ -38,6 +39,8 @@ export function PRsByUser({ username }: { username: string }) {
 					<GitHubAvatar user={thisUser} size={48} />
 				</Group>
 			)}
+
+			{query.data && <PRsGrid username={username} data={query.data} />}
 			{query.data && <PRsChart username={username} data={query.data} />}
 		</Box>
 	);
@@ -133,7 +136,7 @@ function PRsChart({
 		"#e8e6e5",
 	];
 
-	if (includeAverage) {
+	if (includeAverage && compareUsers.length > 0) {
 		for (const [dateLabel, record] of Object.entries(byDateLabels)) {
 			const created: number[] = Object.entries(record)
 				.filter(([name]) => {
@@ -164,7 +167,7 @@ function PRsChart({
 			color: COLORS[index % COLORS.length],
 		})),
 	];
-	if (includeAverage) {
+	if (includeAverage && compareUsers.length > 0) {
 		series.push({ name: "AVERAGE", color: "red.6", strokeDasharray: "5 5" });
 	}
 
@@ -260,14 +263,19 @@ function PRsChart({
 				</OptionSection>
 
 				<OptionSection>
-					<MultiSelect
+					<UserSelect
+						selected={compareUsers}
+						selectable={otherUsers}
+						onChange={setCompareUsers}
+					/>
+					{/* <MultiSelect
 						label="Compare with other users"
 						placeholder="Pick other users"
 						data={otherUsers ? otherUsers.map((u) => u.login) : []}
 						value={compareUsers}
 						onChange={setCompareUsers}
 						searchable
-					/>
+					/> */}
 				</OptionSection>
 
 				<OptionSection>

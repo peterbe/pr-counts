@@ -28,7 +28,12 @@ export function NumbersGrid({
 }) {
 	const stats = dataPoints.map((stat) => {
 		const Icon = icons[stat.icon];
-		const DiffIcon = stat.diff > 0 ? IconArrowUpRight : IconArrowDownRight;
+		const DiffIcon =
+			stat.diff === 0
+				? null
+				: stat.diff > 0
+					? IconArrowUpRight
+					: IconArrowDownRight;
 
 		return (
 			<Paper withBorder p="md" radius="md" key={stat.title}>
@@ -48,7 +53,7 @@ export function NumbersGrid({
 						className={classes.diff}
 					>
 						<span>{stat.diff}</span>
-						<DiffIcon size={16} stroke={1.5} />
+						{DiffIcon && <DiffIcon size={16} stroke={1.5} />}
 					</Text>
 				</Group>
 
@@ -59,7 +64,7 @@ export function NumbersGrid({
 		);
 	});
 	return (
-		<div className={classes.root}>
+		<div>
 			<SimpleGrid cols={{ base: 1, xs: 2, md: 4 }}>{stats}</SimpleGrid>
 		</div>
 	);
