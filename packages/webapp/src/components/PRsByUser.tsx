@@ -13,6 +13,7 @@ import { GitHubAvatar } from "./GitHubAvatar";
 import { PRsGrid } from "./PRsGrid";
 import { ServerError } from "./ServerError";
 import { UserSelect } from "./UserSelect";
+import { useOption } from "./useOption";
 import { type PRCountsType, usePRCounts } from "./usePRCounts";
 import { useUsers } from "./useUsers";
 
@@ -46,6 +47,9 @@ export function PRsByUser({ username }: { username: string }) {
 	);
 }
 
+const CURVE_TYPES = ["natural", "monotone", "linear", "bump"] as const;
+type CurveType = (typeof CURVE_TYPES)[number];
+
 function PRsChart({
 	username,
 	data,
@@ -73,10 +77,17 @@ function PRsChart({
 		key: `pr-counts:skip-last-interval:${username}`,
 		defaultValue: false,
 	});
-	const [includeAverage, setIncludeAverage] = useLocalStorage<boolean>({
-		key: `pr-counts:include-average:${username}`,
-		defaultValue: false,
-	});
+
+	const [includeAverage, setIncludeAverage] = useOption<boolean>(
+		false,
+		"include-average",
+		username,
+	);
+	const [curveType, setCurveType] = useOption<CurveType>(
+		CURVE_TYPES[0],
+		"curve-type",
+		username,
+	);
 
 	const byDateLabels: Record<
 		string,
@@ -220,7 +231,7 @@ function PRsChart({
 					dataKey="date"
 					lineChartProps={{ syncId: "byUser" }}
 					series={series}
-					curveType="monotone"
+					curveType={curveType}
 					withPointLabels
 					type={compareUsers.length === 0 ? "gradient" : undefined}
 					gradientStops={compareUsers.length === 0 ? gradientStops : undefined}
@@ -236,7 +247,7 @@ function PRsChart({
 					dataKey="date"
 					lineChartProps={{ syncId: "byUser" }}
 					series={series}
-					curveType="monotone"
+					curveType={curveType}
 					withPointLabels
 					type={compareUsers.length === 0 ? "gradient" : undefined}
 					gradientStops={compareUsers.length === 0 ? gradientStops : undefined}
@@ -268,14 +279,6 @@ function PRsChart({
 						selectable={otherUsers}
 						onChange={setCompareUsers}
 					/>
-					{/* <MultiSelect
-						label="Compare with other users"
-						placeholder="Pick other users"
-						data={otherUsers ? otherUsers.map((u) => u.login) : []}
-						value={compareUsers}
-						onChange={setCompareUsers}
-						searchable
-					/> */}
 				</OptionSection>
 
 				<OptionSection>
@@ -296,6 +299,18 @@ function PRsChart({
 						onChange={(event) => setIncludeAverage(event.currentTarget.checked)}
 					/>
 				</OptionSection>
+
+				<OptionSection>
+					<SegmentedControl
+						withItemsBorders={false}
+						size="xs"
+						value={curveType}
+						onChange={(value: string) => {
+							setCurveType(value as typeof curveType);
+						}}
+						data={CURVE_TYPES.map((type) => ({ label: type, value: type }))}
+					/>
+				</OptionSection>
 			</Box>
 		</Box>
 	);
@@ -304,3 +319,26 @@ function PRsChart({
 function OptionSection({ children }: { children: React.ReactNode }) {
 	return <Box mb={20}>{children}</Box>;
 }
+
+// function computeRollingAverageArray(
+// 	data: number[],
+// 	period: number,
+// ): (number | undefined)[] {
+// 	const movingAverages: (number | undefined)[] = [];
+
+// 	for (let i = 0; i < data.length; i++) {
+// 		// Check if we have enough data points for the current period
+// 		if (i < period - 1) {
+// 			movingAverages.push(undefined);
+// 			continue;
+// 		}
+
+// 		// Slice the window and calculate the average
+// 		const windowSlice = data.slice(i - period + 1, i + 1);
+// 		const sum = windowSlice.reduce((acc, curr) => acc + curr, 0);
+// 		const average = sum / period;
+// 		movingAverages.push(average);
+// 	}
+
+// 	return movingAverages;
+// }

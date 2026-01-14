@@ -56,7 +56,7 @@ migrate:
     cd packages/scraper &&bunx drizzle-kit migrate
 
 scrape:
-    bun run packages/scraper/src/index.ts by-config peterbe-config.json --days-back 10
+    bun run packages/scraper/src/index.ts by-config peterbe-config.json
 
 export-db:
     bun run packages/scraper/src/index.ts export-json packages/webapp/public/exports

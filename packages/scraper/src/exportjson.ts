@@ -7,6 +7,7 @@ import {
 	type SelectUser,
 	users,
 } from "./schema";
+import { count } from "node:console";
 
 export async function exportJson({ destination }: { destination: string }) {
 	if (!destination) {
@@ -19,6 +20,7 @@ export async function exportJson({ destination }: { destination: string }) {
 	}
 	console.log(`Exporting JSON data to ${destination}`);
 	await exportPRCounts(destination);
+	await exportPRs(destination);
 	await exportUsers(destination);
 }
 
@@ -47,7 +49,7 @@ async function exportPRCounts(destination: string) {
 	type SubSelect = Pick<
 		Select,
 		"username" | "count_prs_created" | "count_prs_reviewed"
-	>; //& { date: string };
+	>;
 	const nwos: Record<string, SubSelect[]> = {};
 	for (const result of results) {
 		const { org, repo, ...rest } = result;
@@ -83,4 +85,57 @@ async function exportUsers(destination: string) {
 	const file = join(destination, `users.json`);
 	await Bun.write(file, JSON.stringify({ users: userdatas }, null, 2));
 	console.log(`Exported ${results.length} records to ${file}`);
+}
+
+async function exportPRs(destination: string) {
+	type Select = Pick<
+		SelectPR,
+		| "org"
+		| "repo"
+		| "username"
+		| "count_prs_created"
+		| "count_prs_reviewed"
+		| "created_prs"
+		| "reviewed_prs"
+		| "date"
+	>;
+	const results: Select[] = await db
+		.select({
+			org: prs.org,
+			repo: prs.repo,
+			username: prs.username,
+			count_prs_created: prs.count_prs_created,
+			count_prs_reviewed: prs.count_prs_reviewed,
+			date: prs.date,
+			created_prs: prs.created_prs,
+			reviewed_prs: prs.reviewed_prs,
+		})
+		.from(prs)
+		.orderBy(prs.date, prs.username)
+		.limit(10_000);
+
+	type SubSelect = Pick<
+		Select,
+		| "count_prs_created"
+		| "count_prs_reviewed"
+		| "created_prs"
+		| "reviewed_prs"
+		| "date"
+	>;
+	const users: Record<string, SubSelect[]> = {};
+	for (const result of results) {
+		const { username, ...rest } = result;
+		if (!users[username]) {
+			users[username] = [];
+		}
+		users[username].push(rest);
+	}
+	for (const [username, userRecords] of Object.entries(users)) {
+		const file = join(destination, `prs-${username}.json`);
+		await Bun.write(
+			file,
+			JSON.stringify({ count: userRecords.length, prs: userRecords }, null, 2),
+		);
+		console.log(`Exported ${userRecords.length} records to ${file}`);
+	}
 }

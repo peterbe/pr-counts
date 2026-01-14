@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 export type UserType = {
 	login: string;
 	html_url: string;
-	site_admin: boolean;
+	site_admin?: boolean;
 	avatar_url: string;
 };
 export type UsersType = {

@@ -130,6 +130,9 @@ async function byUserByDate({
 		"title",
 		"state",
 		"created_at",
+		"user.login",
+		"user.html_url",
+		"user.avatar_url",
 	]);
 
 	if (responseCreated.data.items.length > 0) {
@@ -174,6 +177,9 @@ async function byUserByDate({
 		"title",
 		"state",
 		"created_at",
+		"user.login",
+		"user.html_url",
+		"user.avatar_url",
 	]);
 
 	console.log({
@@ -199,15 +205,45 @@ async function byUserByDate({
 	);
 }
 
-type PR = Record<string, string | number | boolean>;
+type PR = Record<
+	string,
+	string | number | boolean | Record<string, string | number | boolean>
+>;
 
 function simplifyPR(items: Array<Record<string, unknown>>, keys: string[]) {
 	const keeps: PR[] = [];
+	const deeperKeys = new Map<string, string[]>();
+	for (const [parent, child] of keys
+		.filter((k) => k.includes("."))
+		.map((k) => k.split("."))) {
+		if (parent && child) {
+			if (!deeperKeys.has(parent)) {
+				deeperKeys.set(parent, []);
+			}
+			deeperKeys.get(parent)?.push(child);
+		}
+	}
 	for (const item of items) {
 		const keep: PR = {};
 		for (const [key, value] of Object.entries(item)) {
 			if (keys.includes(key)) {
 				keep[key] = value as string | number | boolean;
+			} else if (
+				deeperKeys.has(key) &&
+				typeof value === "object" &&
+				value !== null
+			) {
+				if (!keep[key]) {
+					keep[key] = {} as Record<string, string | number | boolean>;
+				}
+				const deeper = keep[key] as Record<string, string | number | boolean>;
+				for (const subKey of deeperKeys.get(key) || []) {
+					const subValue = (value as Record<string, unknown>)[subKey] as
+						| string
+						| number
+						| boolean;
+					deeper[subKey] = subValue;
+				}
 			}
 		}
 		keeps.push(keep);

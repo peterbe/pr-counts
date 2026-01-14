@@ -3,6 +3,7 @@ import { AllUsers } from "./components/AllUsers";
 import { ChartByUser } from "./components/ChartByUser";
 import ErrorPage from "./components/error-page";
 import { Home } from "./components/Home";
+import { TimelineByUser } from "./components/TimelineByUser";
 
 export const router = createBrowserRouter([
 	{
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Home /> },
 					{ path: "user", element: <AllUsers /> },
+					{ path: "user/:username/timeline", element: <TimelineByUser /> },
 					{ path: "user/:username", element: <ChartByUser /> },
 				],
 			},
