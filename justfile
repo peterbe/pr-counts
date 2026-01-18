@@ -1,24 +1,7 @@
 # https://github.com/casey/just
 # https://just.systems/
 
-dev-with-proxy:
-    VITE_API_TARGET=https://admin.peterbe.com bun run dev -- --port 4001
 
-dev-for-testing:
-    NODE_ENV=test bun run dev -- --port 4001
-
-build:
-    bun run build
-
-start: build
-    bun  run preview -- --port 4001
-
-start-with-proxy: build
-    VITE_API_TARGET=https://admin.peterbe.com bun run preview -- --port 4001
-
-start-for-testing:
-    NODE_ENV=test bun run build
-    NODE_ENV=test bun run preview -- --port 3000
 
 tsc:
     bun run tsc
@@ -65,3 +48,9 @@ export: export-db
 
 dev: export-db
     bun run --filter webapp dev
+
+build:
+    bun run --filter webapp build
+
+start: build export-db
+    bun run --filter webapp preview

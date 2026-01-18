@@ -7,7 +7,6 @@ import {
 	type SelectUser,
 	users,
 } from "./schema";
-import { count } from "node:console";
 
 export async function exportJson({ destination }: { destination: string }) {
 	if (!destination) {

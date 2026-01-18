@@ -56,34 +56,6 @@ export function UserSelection() {
 		[searchParams, setSearchParams],
 	);
 
-	// useEffect(() => {
-	// 	// setValue(selectedUsers);
-	// 	if (possibleUsers.length === 0) return;
-	// 	if (selectedUsers.length) {
-	// 		if (!equalArrays(selectedUsers, rememberedUsers)) {
-	// 			console.log("HERE", [selectedUsers, rememberedUsers]);
-
-	// 			setRememberedUsers(selectedUsers);
-	// 		}
-	// 	} else if (rememberedUsers.length) {
-	// 		setSelectedUsers(rememberedUsers);
-	// 		// console.log(
-	// 		// 	"selectedUsers changed:",
-	// 		// 	selectedUsers,
-	// 		// 	"possibleUsers",
-	// 		// 	possibleUsers,
-	// 		// 	"rememberedUsers",
-	// 		// 	rememberedUsers,
-	// 		// );
-	// 	}
-	// }, [
-	// 	selectedUsers,
-	// 	possibleUsers,
-	// 	rememberedUsers,
-	// 	setRememberedUsers,
-	// 	setSelectedUsers,
-	// ]);
-
 	return (
 		<Box pos="relative">
 			<LoadingOverlay visible={query.isPending} />
@@ -106,7 +78,7 @@ export function UserSelection() {
 	);
 }
 
-function _equalArrays(a: string[], b: string[]) {
-	if (a.length !== b.length) return false;
-	return a.every((value, index) => value === b[index]);
-}
+// function _equalArrays(a: string[], b: string[]) {
+// 	if (a.length !== b.length) return false;
+// 	return a.every((value, index) => value === b[index]);
+// }
