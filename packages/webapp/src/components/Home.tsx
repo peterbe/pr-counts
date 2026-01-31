@@ -1,9 +1,7 @@
-import { AppShell, Burger, Container, Group } from "@mantine/core";
-import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
-import { BasicHeader } from "./BasicHeader";
-import { PRsChart } from "./PRsChart";
-import { Sidebar } from "./Sidebar";
+import { Container } from "@mantine/core";
+import { useDocumentTitle } from "@mantine/hooks";
 import { GeneralAppShell } from "./GeneralAppShell";
+import { PRsChart } from "./PRsChart";
 import { UserSelection } from "./UserSelection";
 
 export function Home() {

@@ -1,6 +1,6 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 
-type PRSummary = {
+export type PRSummary = {
 	state: string;
 	title: string;
 	number: number;
