@@ -18,7 +18,9 @@ export function UserButton({
 }) {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const isActive = location.pathname === `/user/${user.login}`;
+	const isActive =
+		location.pathname === `/user/${user.login}` ||
+		location.pathname === `/user/${user.login}/timeline`;
 	return (
 		<UnstyledButton
 			className={classes.user}

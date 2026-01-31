@@ -5,7 +5,6 @@ export function HeaderBreadcrumbs() {
 	const { pathname } = useLocation();
 	const params = useParams();
 
-	console.log("PATHNAME", pathname);
 	if (/\/user\/[^/]+\/(numbers|chart)/.test(pathname)) {
 		const username = params.username as string;
 		const items = [

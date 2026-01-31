@@ -15,7 +15,7 @@ program
 	.argument("[repo]", "Repo name")
 	.argument("[username]", "User name")
 	.option("--debug", "Debug mode (shows traceback)")
-	.option("--days-ago <number>", "Number of days ago to look back")
+	.option("--days-back <number>", "Number of days ago to look back")
 	.option("--date <date>", "Specific date to process")
 	.description("Computes all PR activity by user")
 	.action((org, repo, username, options) => {
@@ -23,7 +23,7 @@ program
 			byUsers({
 				org,
 				repo,
-				usernames: [username],
+				users: [username],
 				...options,
 			}),
 			options.debug,

@@ -4,6 +4,7 @@ import { ChartByUser } from "./components/ChartByUser";
 import ErrorPage from "./components/error-page";
 import { Home } from "./components/Home";
 import { TimelineByUser } from "./components/TimelineByUser";
+import { Events } from "./components/Events";
 
 export const router = createBrowserRouter([
 	{
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
 					{ path: "user", element: <AllUsers /> },
 					{ path: "user/:username/timeline", element: <TimelineByUser /> },
 					{ path: "user/:username", element: <ChartByUser /> },
+					{ path: "events", element: <Events /> },
 				],
 			},
 		],

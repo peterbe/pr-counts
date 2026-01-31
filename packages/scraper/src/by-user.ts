@@ -1,6 +1,7 @@
 import { formatDate } from "./date-formatter";
 import { getOctokit } from "./github-utils";
 import { hasData } from "./has-data";
+import { searchIssues } from "./search-issues";
 import { upsertPR, upsertUser } from "./upsert";
 
 type UserConfig = {
@@ -118,7 +119,7 @@ async function byUserByDate({
 	q += ` ${addCreatedParam(created)}`;
 	console.log("Querying:", q);
 
-	const responseCreated = await octokit.request("GET /search/issues", { q });
+	const responseCreated = await searchIssues(octokit, q);
 	if (responseCreated.data.incomplete_results) {
 		console.log(responseCreated.data);
 		console.warn("Warning: The search results may be incomplete.");
@@ -163,9 +164,7 @@ async function byUserByDate({
 	}
 	q += ` ${addCreatedParam(created)}`;
 	// console.log("Querying:", q);
-	const responseReviewed = await octokit.request("GET /search/issues", {
-		q,
-	});
+	const responseReviewed = await searchIssues(octokit, q);
 	if (responseReviewed.data.incomplete_results) {
 		console.log(responseReviewed.data);
 		console.warn("Warning: The search results may be incomplete.");

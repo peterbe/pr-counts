@@ -4,7 +4,13 @@ import { BasicHeader } from "./BasicHeader";
 import { HeaderBreadcrumbs } from "./HeaderBreadcrumbs";
 import { SidebarUsers } from "./SidebarUsers";
 
-export function GeneralAppShell({ children }: { children: React.ReactNode }) {
+export function GeneralAppShell({
+	children,
+	Sidebar = SidebarUsers,
+}: {
+	children: React.ReactNode;
+	Sidebar: React.FC;
+}) {
 	const [opened, { toggle }] = useDisclosure();
 
 	return (
@@ -21,7 +27,8 @@ export function GeneralAppShell({ children }: { children: React.ReactNode }) {
 				</Group>
 			</AppShell.Header>
 			<AppShell.Navbar p="md">
-				<SidebarUsers />
+				{/* <SidebarUsers /> */}
+				<Sidebar />
 			</AppShell.Navbar>
 			<AppShell.Main>{children}</AppShell.Main>
 		</AppShell>

@@ -2,12 +2,14 @@ import {
 	ActionIcon,
 	Anchor,
 	Box,
+	Container,
 	Flex,
 	Group,
 	LoadingOverlay,
 	Select,
 	Text,
 	Timeline,
+	Title,
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import {
@@ -19,7 +21,7 @@ import {
 import { format } from "date-fns/format";
 import { startOfDay } from "date-fns/startOfDay";
 import { sub } from "date-fns/sub";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { GeneralAppShell } from "./GeneralAppShell";
 import { GitHubAvatar } from "./GitHubAvatar";
 import { ServerError } from "./ServerError";
@@ -35,7 +37,9 @@ export function TimelineByUser() {
 	);
 	return (
 		<GeneralAppShell>
-			{params.username && <ByUser username={params.username} />}
+			<Container style={{ minWidth: 900 }}>
+				{params.username && <ByUser username={params.username} />}
+			</Container>
 		</GeneralAppShell>
 	);
 }
@@ -43,9 +47,9 @@ export function TimelineByUser() {
 function ByUser({ username }: { username: string }) {
 	const query = usePRs(username);
 	const users = useUsers();
-	// const _thisUser = Object.values(users.data?.users || {}).find(
-	// 	(u) => u.login === username,
-	// );
+	const thisUser = Object.values(users.data?.users || {}).find(
+		(u) => u.login === username,
+	);
 	const [daysAgo, setDaysAgo] = useOption<number>(
 		1,
 		"timeline-days-ago",
@@ -103,7 +107,21 @@ function ByUser({ username }: { username: string }) {
 		return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 	});
 	return (
-		<Box data-testid="timeline-by-user">
+		<Box data-testid="timeline-by-user" pos="relative" w="100%">
+			<Group justify="space-between" mb={20}>
+				<Title order={2}>
+					Timeline for{" "}
+					{thisUser && (
+						<a href={thisUser.html_url} target="_blank">
+							@{thisUser.login}
+						</a>
+					)}
+				</Title>
+				<Anchor to={`/user/${username}`} component={Link}>
+					Charts
+				</Anchor>
+				{thisUser && <GitHubAvatar user={thisUser} size={48} />}
+			</Group>
 			<ServerError error={users.error || query.error} />
 			<LoadingOverlay visible={query.isPending || users.isPending} />
 
