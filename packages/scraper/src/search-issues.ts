@@ -1,6 +1,6 @@
 import type { Octokit } from "octokit";
 
-const MAX_TIMEOUT_MS = 5000;
+const MAX_TIMEOUT_MS = 10 * 1_000;
 
 export class TimeoutError extends Error {}
 

@@ -1,10 +1,27 @@
-import { Container } from "@mantine/core";
-import { useDocumentTitle } from "@mantine/hooks";
-import { useParams, useSearchParams } from "react-router";
+import {
+	Anchor,
+	Avatar,
+	Box,
+	Button,
+	Container,
+	LoadingOverlay,
+	SimpleGrid,
+	Text,
+	Timeline,
+	Title,
+} from "@mantine/core";
+import { useDocumentTitle, useSessionStorage } from "@mantine/hooks";
+import { formatDistance } from "date-fns";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router";
 import { GeneralAppShell } from "./GeneralAppShell";
+import { GitHubAvatar } from "./GitHubAvatar";
+import { ServerError } from "./ServerError";
+import { UserSelection } from "./UserSelection";
+import { type PRSummary, type PRsType, useMultiplePRs } from "./usePRs";
+import { type UserType, useUsers } from "./useUsers";
 
 export function Events() {
-	const params = useParams();
 	useDocumentTitle("Events");
 	return (
 		<GeneralAppShell Sidebar={UserSelection}>
@@ -15,60 +32,8 @@ export function Events() {
 	);
 }
 
-import { Group, Avatar, Text, Accordion } from "@mantine/core";
-import { UserSelection } from "./UserSelection";
-import { usePRCounts } from "./usePRCounts";
-import { useUsers } from "./useUsers";
-import { useMultiplePRs, usePRs, type DailyPR, type PRsType } from "./usePRs";
-
-const charactersList = [
-	{
-		id: "bender",
-		image: "https://img.icons8.com/clouds/256/000000/futurama-bender.png",
-		label: "Bender Bending Rodríguez",
-		description: "Fascinated with cooking, though has no sense of taste",
-		content:
-			"Bender Bending Rodríguez, (born September 4, 2996), designated Bending Unit 22, and commonly known as Bender, is a bending unit created by a division of MomCorp in Tijuana, Mexico, and his serial number is 2716057. His mugshot id number is 01473. He is Fry's best friend.",
-	},
-
-	{
-		id: "carol",
-		image: "https://img.icons8.com/clouds/256/000000/futurama-mom.png",
-		label: "Carol Miller",
-		description: "One of the richest people on Earth",
-		content:
-			"Carol Miller (born January 30, 2880), better known as Mom, is the evil chief executive officer and shareholder of 99.7% of Momcorp, one of the largest industrial conglomerates in the universe and the source of most of Earth's robots. She is also one of the main antagonists of the Futurama series.",
-	},
-
-	{
-		id: "homer",
-		image: "https://img.icons8.com/clouds/256/000000/homer-simpson.png",
-		label: "Homer Simpson",
-		description: "Overweight, lazy, and often ignorant",
-		content:
-			"Homer Jay Simpson (born May 12) is the main protagonist and one of the five main characters of The Simpsons series(or show). He is the spouse of Marge Simpson and father of Bart, Lisa and Maggie Simpson.",
-	},
-];
-
-interface AccordionLabelProps {
-	label: string;
-	image: string;
-	description: string;
-}
-
-function AccordionLabel({ label, image, description }: AccordionLabelProps) {
-	return (
-		<Group wrap="nowrap">
-			<Avatar src={image} radius="xl" size="lg" />
-			<div>
-				<Text>{label}</Text>
-				<Text size="sm" c="dimmed" fw={400}>
-					{description}
-				</Text>
-			</div>
-		</Group>
-	);
-}
+const DEFAULT_SLICE = 50;
+const SLICE_INCREMENT = 10;
 
 function ByUsers() {
 	const [searchParams] = useSearchParams();
@@ -84,40 +49,145 @@ function ByUsers() {
 	// console.log({ possibleUsernames, selectedUsers });
 	const queries = useMultiplePRs(usernames);
 	const queriesLoading = queries.some((q) => q.isPending);
-	const queriesError = queries.some((q) => q.isError);
+	const queriesError = queries.find((q) => q.error);
 	// const flatten = queries.map((q) => q.data)
 	// console.log("QUERIES:", queries);
-
-	const flat: Record<string, DailyPR[]> = [];
-	if (!queriesLoading && !queriesError) {
-		for (const query of queries) {
-			// const data: D
-			const data = query.data as PRsType;
-			console.log("DATA:", query.data);
-			for (const pr of data.prs) {
+	const [slice, setSlice, resetSlice] = useSessionStorage<number>({
+		key: `pr-counts:events-slice:${usernames.join("")}`,
+		defaultValue: DEFAULT_SLICE,
+	});
+	type FlatRecord = {
+		username: string;
+		date: Date;
+		prType: "created" | "reviewed";
+		summary: PRSummary;
+	};
+	const records = useMemo(() => {
+		const flat: FlatRecord[] = [];
+		queries.forEach((query, index) => {
+			const username = usernames[index];
+			const data = query.data as PRsType | undefined;
+			for (const pr of data?.prs || []) {
+				for (const key of ["created_prs", "reviewed_prs"] as const) {
+					for (const prSummary of pr[key]) {
+						flat.push({
+							username,
+							date: new Date(prSummary.created_at),
+							prType: key === "created_prs" ? "created" : "reviewed",
+							summary: prSummary,
+						});
+					}
+				}
 			}
-		}
-	}
-	// console.log({ flatten });
-	// console.log(query.data);
-	// const queries = usePRs(selectedUsers, {
-	//     enabled: users.data !== undefined,
-	// });
+		});
+		return flat.sort((a, b) => b.date.getTime() - a.date.getTime());
+	}, [queries, usernames]);
 
-	const items = charactersList.map((item) => (
-		<Accordion.Item value={item.id} key={item.label}>
-			<Accordion.Control aria-label={item.label}>
-				<AccordionLabel {...item} />
-			</Accordion.Control>
-			<Accordion.Panel>
-				<Text size="sm">{item.content}</Text>
-			</Accordion.Panel>
-		</Accordion.Item>
-	));
+	const userMap: Record<string, UserType> = {};
+	Object.entries(users.data?.users || {}).forEach(([username, user]) => {
+		userMap[username] = user;
+	});
 
 	return (
-		<Accordion chevronPosition="right" variant="contained" radius="md">
-			{items}
-		</Accordion>
+		<Box pos="relative">
+			<Title mb={20}>Recent Events</Title>
+			<LoadingOverlay visible={queriesLoading} />
+			<ServerError error={users.error || queriesError?.error || null} />
+			<Timeline bulletSize={38} mb={40}>
+				{records.slice(0, slice).map((record, index) => {
+					const user = userMap[record.username];
+
+					if (record.prType === "reviewed") {
+						console.log(record.summary);
+					}
+					const title = (
+						<>
+							<Anchor href={user.html_url} target="_blank">
+								{record.username}
+							</Anchor>{" "}
+							{record.prType === "created" ? "created" : "reviewed"}{" "}
+							<Anchor
+								href={record.summary.html_url}
+								target="_blank"
+								title={record.summary.title}
+							>
+								{truncate(record.summary.title, 50)}
+							</Anchor>
+							{record.prType === "reviewed" ? (
+								<Text size="sm" span>
+									{" "}
+									by{" "}
+								</Text>
+							) : null}
+							{/* {record.prType === "reviewed" && record.summary.user ? (
+								<GitHubAvatar user={record.summary.user} size={24} />
+							) : null} */}
+							{record.prType === "reviewed" && record.summary.user ? (
+								<GitHubAvatar
+									user={record.summary.user}
+									nameOnly
+									textSize="sm"
+								/>
+							) : null}
+						</>
+					);
+
+					const avatarUrl =
+						user.avatar_url ||
+						"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png";
+					return (
+						<Timeline.Item
+							key={`${record.username}${record.prType}${record.summary.number}${index}`}
+							title={title}
+							bullet={<Avatar size={36} radius="xl" src={avatarUrl} />}
+						>
+							<Text c="dimmed" size="sm">
+								{formatDistance(record.date, new Date(), {
+									addSuffix: true,
+								})}
+							</Text>
+						</Timeline.Item>
+					);
+				})}
+			</Timeline>
+
+			{!queriesLoading && !queriesError && records.length && (
+				<SimpleGrid cols={slice > DEFAULT_SLICE ? 3 : 1} spacing="xs">
+					<Button
+						fullWidth
+						variant="default"
+						onClick={() => setSlice((p) => p + SLICE_INCREMENT)}
+					>
+						Load More
+					</Button>
+					{slice > DEFAULT_SLICE && (
+						<Button
+							fullWidth
+							variant="default"
+							onClick={() => {
+								window.scrollTo(0, 0);
+							}}
+						>
+							To the top
+						</Button>
+					)}
+					{slice > DEFAULT_SLICE && (
+						<Button
+							fullWidth
+							variant="default"
+							onClick={() => {
+								resetSlice();
+							}}
+						>
+							Reset
+						</Button>
+					)}
+				</SimpleGrid>
+			)}
+		</Box>
 	);
+}
+
+function truncate(str: string, n: number) {
+	return str.length > n ? `${str.slice(0, n - 1)}…` : str;
 }
