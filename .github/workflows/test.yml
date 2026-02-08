@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+
 jobs:
   test:
     runs-on: ubuntu-latest
