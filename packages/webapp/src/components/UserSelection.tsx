@@ -1,12 +1,14 @@
-import { Box, Checkbox, LoadingOverlay, Stack } from "@mantine/core";
-import { useCallback } from "react";
-import { useSearchParams } from "react-router";
+import { Box, Button, LoadingOverlay } from "@mantine/core";
+import { ImageCheckbox } from "./ImageCheckbox";
 import { usePRCounts } from "./usePRCounts";
+import { useSelectedUsers } from "./useSelectedUsers";
+import { useUsers } from "./useUsers";
 
 export function UserSelection() {
-	const [searchParams, setSearchParams] = useSearchParams();
-	const selectedUsers = searchParams.getAll("users");
+	const [selectedUsers, setSelectedUsers, resetSelectedUsers] =
+		useSelectedUsers();
 
+	const users = useUsers();
 	const query = usePRCounts();
 	const data: {
 		name: string;
@@ -42,38 +44,45 @@ export function UserSelection() {
 		}
 	}
 
-	// const possibleUsers = Object.keys(byUser);
-
-	const setSelectedUsers = useCallback(
-		(users: string[]) => {
-			const params = new URLSearchParams(searchParams);
-			params.delete("users");
-			for (const v of users) {
-				params.append("users", v);
-			}
-			setSearchParams(params);
-		},
-		[searchParams, setSearchParams],
-	);
+	const allUsers = Object.values(users.data?.users || {});
 
 	return (
 		<Box pos="relative">
-			<LoadingOverlay visible={query.isPending} />
-			<Checkbox.Group
-				value={selectedUsers}
-				onChange={(value) => {
-					setSelectedUsers(value);
-				}}
-				// label="Pick packages to install"
-				label="Select users"
-				// description="Choose all packages that you will need in your application"
-			>
-				<Stack pt="md" gap="xs">
-					{data.map((item) => (
-						<Checkbox value={item.name} label={item.name} key={item.name} />
-					))}
-				</Stack>
-			</Checkbox.Group>
+			<LoadingOverlay visible={query.isPending || users.isPending} />
+			{allUsers.map((user) => {
+				return (
+					<Box mb={20} key={user.login}>
+						<ImageCheckbox
+							checked={selectedUsers.includes(user.login)}
+							defaultChecked={false}
+							onChange={(checked) => {
+								if (checked) {
+									setSelectedUsers([...selectedUsers, user.login]);
+								} else {
+									setSelectedUsers(
+										selectedUsers.filter((s) => s !== user.login),
+									);
+								}
+							}}
+							title={user.login}
+							image={user.avatar_url}
+						/>
+					</Box>
+				);
+			})}
+			{selectedUsers.length > 0 && (
+				<Box>
+					<Button
+						variant="default"
+						onClick={() => {
+							resetSelectedUsers();
+						}}
+						fullWidth
+					>
+						Clear
+					</Button>
+				</Box>
+			)}
 		</Box>
 	);
 }
