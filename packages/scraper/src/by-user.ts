@@ -204,7 +204,7 @@ async function byUserByDate({
 	);
 }
 
-type PR = Record<
+export type PR = Record<
 	string,
 	string | number | boolean | Record<string, string | number | boolean>
 >;
