@@ -33,10 +33,9 @@ upgrade:
 
 
 make-migrations:
-    cd packages/scraper && bunx drizzle-kit generate
+    bun run --filter scraper make-migrations
 
 migrate:
-    # cd packages/scraper &&bunx drizzle-kit migrate
     bun run --filter scraper migrate
 
 scrape:
