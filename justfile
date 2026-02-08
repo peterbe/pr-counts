@@ -36,7 +36,8 @@ make-migrations:
     cd packages/scraper && bunx drizzle-kit generate
 
 migrate:
-    cd packages/scraper &&bunx drizzle-kit migrate
+    # cd packages/scraper &&bunx drizzle-kit migrate
+    bun run --filter scraper migrate
 
 scrape:
     bun run packages/scraper/src/index.ts by-config peterbe-config.json
