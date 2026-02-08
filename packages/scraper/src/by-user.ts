@@ -255,7 +255,6 @@ function dateRange(startDate: Date): Date[] {
 	const today = toUTCDate(new Date());
 	today.setSeconds(0);
 	const currentDate = toUTCDate(new Date(startDate));
-	// console.log({ today, currentDate });
 	while (currentDate < today) {
 		dates.push(new Date(currentDate));
 		currentDate.setDate(currentDate.getDate() + 1);
