@@ -25,5 +25,6 @@ jobs:
       - run: bun install
       - run: bun run lint
       - run: bun run --filter scraper migrate
-      - run: bun run --filter scraper by-config .github/workflows/test-config.json
+      - run: bun run packages/scraper/src/index.ts by-config .github/workflows/test-config.json
+      - run: bun run packages/scraper/src/index.ts export-json packages/webapp/public/exports
       - run: bun run --filter webapp build

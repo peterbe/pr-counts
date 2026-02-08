@@ -41,16 +41,16 @@ migrate:
 scrape:
     bun run packages/scraper/src/index.ts by-config peterbe-config.json
 
-export-db:
+export-json:
     bun run packages/scraper/src/index.ts export-json packages/webapp/public/exports
 
-export: export-db
+export: export-json
 
-dev: export-db
+dev: export-json
     bun run --filter webapp dev
 
 build:
     bun run --filter webapp build
 
-start: build export-db
+start: build export-json
     bun run --filter webapp preview
