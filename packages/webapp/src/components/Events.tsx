@@ -13,12 +13,13 @@ import {
 import { useDocumentTitle, useSessionStorage } from "@mantine/hooks";
 import { formatDistance } from "date-fns";
 import { useMemo } from "react";
-import { useSearchParams } from "react-router";
+import { Link } from "react-router";
 import { GeneralAppShell } from "./GeneralAppShell";
 import { GitHubAvatar } from "./GitHubAvatar";
 import { ServerError } from "./ServerError";
 import { UserSelection } from "./UserSelection";
 import { type PRSummary, type PRsType, useMultiplePRs } from "./usePRs";
+import { useSelectedUsers } from "./useSelectedUsers";
 import { type UserType, useUsers } from "./useUsers";
 
 export function Events() {
@@ -36,8 +37,7 @@ const DEFAULT_SLICE = 50;
 const SLICE_INCREMENT = 50;
 
 function ByUsers() {
-	const [searchParams] = useSearchParams();
-	const selectedUsers = searchParams.getAll("users");
+	const [selectedUsers] = useSelectedUsers();
 	const users = useUsers();
 	const possibleUsernames = users.data ? Object.keys(users.data.users) : [];
 
@@ -60,6 +60,9 @@ function ByUsers() {
 		const flat: FlatRecord[] = [];
 		queries.forEach((query, index) => {
 			const username = usernames[index];
+			if (selectedUsers.length > 0 && !selectedUsers.includes(username)) {
+				return;
+			}
 			const data = query.data as PRsType | undefined;
 			for (const pr of data?.prs || []) {
 				for (const key of ["created_prs", "reviewed_prs"] as const) {
@@ -75,7 +78,7 @@ function ByUsers() {
 			}
 		});
 		return flat.sort((a, b) => b.date.getTime() - a.date.getTime());
-	}, [queries, usernames]);
+	}, [queries, usernames, selectedUsers]);
 
 	const userMap: Record<string, UserType> = {};
 	Object.entries(users.data?.users || {}).forEach(([username, user]) => {
@@ -84,21 +87,17 @@ function ByUsers() {
 
 	return (
 		<Box pos="relative">
-			<Title mb={20}>Recent Events</Title>
+			<Title mb={20} order={2}>
+				Recent Events
+			</Title>
 			<LoadingOverlay visible={queriesLoading} />
 			<ServerError error={users.error || queriesError?.error || null} />
 			<Timeline bulletSize={38} mb={40}>
 				{records.slice(0, slice).map((record, index) => {
 					const user = userMap[record.username];
-
-					if (record.prType === "reviewed") {
-						console.log(record.summary);
-					}
 					const title = (
 						<>
-							<Anchor href={user.html_url} target="_blank">
-								{record.username}
-							</Anchor>{" "}
+							<Link to={`/user/${record.username}`}>{record.username}</Link>{" "}
 							{record.prType === "created" ? "created" : "reviewed"}{" "}
 							<Anchor
 								href={record.summary.html_url}
