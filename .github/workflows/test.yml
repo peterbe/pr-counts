@@ -16,10 +16,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - run: 'echo "DATABASE_URL: ${DATABASE_URL}"'
       # https://github.com/bmizerany/setup-postgres/issues/6
       - run: mkdir -p $HOME/.local
       # https://github.com/bmizerany/setup-postgres?tab=readme-ov-file#environment-configuration
       - uses: bmizerany/setup-postgres@v3
+      - run: 'echo "DATABASE_URL: ${DATABASE_URL}"'
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
       - run: bun install
