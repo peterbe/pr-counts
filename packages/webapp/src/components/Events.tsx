@@ -33,7 +33,7 @@ export function Events() {
 }
 
 const DEFAULT_SLICE = 50;
-const SLICE_INCREMENT = 10;
+const SLICE_INCREMENT = 50;
 
 function ByUsers() {
 	const [searchParams] = useSearchParams();
