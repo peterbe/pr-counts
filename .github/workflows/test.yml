@@ -13,10 +13,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
       # https://github.com/bmizerany/setup-postgres?tab=readme-ov-file#environment-configuration
       - uses: bmizerany/setup-postgres@v3
+      - uses: actions/checkout@v6
+
         # with:
         #   postgresql version: "15"
         #   postgresql db: "pr-counts"
