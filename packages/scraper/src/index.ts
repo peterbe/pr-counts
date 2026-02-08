@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { byUsers } from "./by-user";
 import { byUsersByConfig } from "./by-user-by-config";
 import { exportJson } from "./exportjson";
+import { purgeDupes } from "./purge";
 
 const program = new Command();
 program
@@ -91,6 +92,13 @@ program
 			}),
 			options.debug,
 		);
+	});
+
+program
+	.command("purge-dupes")
+	.option("--debug", "Debug mode (shows traceback)")
+	.action((options) => {
+		wrap(purgeDupes(), options.debug);
 	});
 
 program.parse();
