@@ -13,6 +13,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      # https://github.com/bmizerany/setup-postgres/issues/6
       - run: mkdir -p $HOME/.local
       # https://github.com/bmizerany/setup-postgres?tab=readme-ov-file#environment-configuration
       - uses: bmizerany/setup-postgres@v3
