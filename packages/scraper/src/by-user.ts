@@ -252,14 +252,21 @@ function simplifyPR(items: Array<Record<string, unknown>>, keys: string[]) {
 
 function dateRange(startDate: Date): Date[] {
 	const dates: Date[] = [];
-	const today = new Date();
+	const today = toUTCDate(new Date());
 	today.setSeconds(0);
-	const currentDate = new Date(startDate);
+	const currentDate = toUTCDate(new Date(startDate));
+	// console.log({ today, currentDate });
 	while (currentDate < today) {
 		dates.push(new Date(currentDate));
 		currentDate.setDate(currentDate.getDate() + 1);
 	}
 	return dates;
+}
+
+function toUTCDate(date: Date): Date {
+	return new Date(
+		Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+	);
 }
 
 function addCreatedParam(since: Date): string {

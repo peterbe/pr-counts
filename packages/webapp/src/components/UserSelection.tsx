@@ -77,8 +77,3 @@ export function UserSelection() {
 		</Box>
 	);
 }
-
-// function _equalArrays(a: string[], b: string[]) {
-// 	if (a.length !== b.length) return false;
-// 	return a.every((value, index) => value === b[index]);
-// }

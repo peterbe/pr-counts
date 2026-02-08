@@ -37,21 +37,15 @@ const SLICE_INCREMENT = 10;
 
 function ByUsers() {
 	const [searchParams] = useSearchParams();
-	// const query = usePRCounts();
 	const selectedUsers = searchParams.getAll("users");
 	const users = useUsers();
-	// const possibleUsernames = Object.values(query.data || {});
-	// console.log({ possibleUsernames });
 	const possibleUsernames = users.data ? Object.keys(users.data.users) : [];
 
 	const usernames =
 		selectedUsers.length > 0 ? selectedUsers : possibleUsernames;
-	// console.log({ possibleUsernames, selectedUsers });
 	const queries = useMultiplePRs(usernames);
 	const queriesLoading = queries.some((q) => q.isPending);
 	const queriesError = queries.find((q) => q.error);
-	// const flatten = queries.map((q) => q.data)
-	// console.log("QUERIES:", queries);
 	const [slice, setSlice, resetSlice] = useSessionStorage<number>({
 		key: `pr-counts:events-slice:${usernames.join("")}`,
 		defaultValue: DEFAULT_SLICE,
