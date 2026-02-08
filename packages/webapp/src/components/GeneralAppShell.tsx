@@ -9,7 +9,7 @@ export function GeneralAppShell({
 	Sidebar = SidebarUsers,
 }: {
 	children: React.ReactNode;
-	Sidebar: React.FC;
+	Sidebar?: React.FC;
 }) {
 	const [opened, { toggle }] = useDisclosure();
 
@@ -28,7 +28,7 @@ export function GeneralAppShell({
 			</AppShell.Header>
 			<AppShell.Navbar p="md">
 				{/* <SidebarUsers /> */}
-				<Sidebar />
+				{Sidebar && <Sidebar />}
 			</AppShell.Navbar>
 			<AppShell.Main>{children}</AppShell.Main>
 		</AppShell>

@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/bmizerany/setup-postgres/issues/6
+      - run: mkdir -p $HOME/.local
+      # https://github.com/bmizerany/setup-postgres?tab=readme-ov-file#environment-configuration
+      - uses: bmizerany/setup-postgres@v3
+      # Annoyingly, the bmizerany/setup-postgres tries to set the env var in a way
+      # that doesn't work for subsequent steps. So we have to set it ourselves.
+      - run: 'echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres" >> "$GITHUB_ENV"'
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun run lint
+      - run: bun run --filter scraper migrate
+      - run: bun run packages/scraper/src/index.ts by-config .github/workflows/test-config.json
+      - run: bun run packages/scraper/src/index.ts export-json packages/webapp/public/exports
+      - run: bun run --filter webapp build

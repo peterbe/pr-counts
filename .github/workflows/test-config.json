@@ -1,0 +1,7 @@
+{
+  "org": "peterbe",
+  "repo": "pr-counts",
+  "users": [{ "username": "peterbe" }],
+  "sleep-seconds": 2,
+  "days-back": 1
+}

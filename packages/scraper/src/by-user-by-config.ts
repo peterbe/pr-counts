@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import type { BunFile } from "bun";
 import * as v from "valibot";
 import { byUsers } from "./by-user";
 
@@ -35,8 +36,7 @@ export async function byUsersByConfig({
 	sleepSeconds?: number | string | null;
 	date?: string;
 }) {
-	const configfileFile = Bun.file(configfile);
-	console.log(`Loading config from ${resolve(configfile)}`);
+	const configfileFile = await findFile(configfile);
 	if (!(await configfileFile.exists())) {
 		throw new Error(`Config file ${configfile} does not exist`);
 	}
@@ -81,4 +81,24 @@ function getConfigFromRaw(raw: object): ConfigData {
 		console.error(result.issues);
 		throw new Error("Invalid config file");
 	}
+}
+
+async function findFile(filename: string): Promise<BunFile> {
+	let file = Bun.file(filename);
+	if (await file.exists()) {
+		console.log(`Loading config from ${resolve(filename)}`);
+		return file;
+	}
+
+	if (filename.startsWith("/")) {
+		throw new Error(`Config file ${filename} not found`);
+	}
+	const relFilename = resolve(process.cwd(), "..", "..", filename);
+	file = Bun.file(relFilename);
+	if (await file.exists()) {
+		console.log(`Loading config from ${relFilename}`);
+		return file;
+	}
+
+	throw new Error(`Config file ${filename} not found`);
 }

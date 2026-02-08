@@ -3,7 +3,8 @@
 	"module": "src/index.ts",
 	"type": "module",
 	"scripts": {
-		"by-config": "bun run src/index.ts by-config"
+		"migrate": "drizzle-kit migrate",
+		"make-migrations": "drizzle-kit generate"
 	},
 	"devDependencies": {
 		"@types/pg": "^8.16.0",
