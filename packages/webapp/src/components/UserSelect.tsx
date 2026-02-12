@@ -31,6 +31,7 @@ export function UserSelect({
 	if (selected.length > 0) {
 		items.push(
 			<UnstyledButton
+				key="__clear"
 				onClick={() => {
 					onChange([]);
 				}}

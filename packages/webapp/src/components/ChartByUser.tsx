@@ -3,9 +3,11 @@ import {
 	Anchor,
 	Box,
 	Container,
+	Grid,
 	Group,
 	LoadingOverlay,
 	SegmentedControl,
+	Select,
 	Switch,
 	Title,
 } from "@mantine/core";
@@ -99,6 +101,11 @@ function PRsChart({
 		defaultValue: false,
 	});
 
+	const [dateRangeDays, setDateRangeDays] = useLocalStorage<number>({
+		key: `pr-counts:date-range:${username}`,
+		defaultValue: 30 * 3,
+	});
+
 	const [includeAverage, setIncludeAverage] = useOption<boolean>(
 		false,
 		"include-average",
@@ -120,6 +127,8 @@ function PRsChart({
 		}
 	> = {};
 
+	let startDate: null | Date = null;
+
 	for (const rows of Object.values(data)) {
 		for (const row of rows) {
 			const dateLabel =
@@ -133,6 +142,19 @@ function PRsChart({
 					otherUsers.find((u) => u.login === row.username)
 				)
 			) {
+				continue;
+			}
+
+			if (
+				!startDate &&
+				row.username === username &&
+				(row.count_prs_created > 0 || row.count_prs_reviewed > 0)
+			) {
+				startDate = new Date(row.date);
+			}
+			if (!startDate) continue;
+
+			if (getDaysBetweenDates(new Date(row.date), new Date()) > dateRangeDays) {
 				continue;
 			}
 
@@ -150,12 +172,34 @@ function PRsChart({
 					count_prs_reviewed: 0,
 				};
 			}
-			byDateLabels[dateLabel][row.username].count_prs_created +=
-				row.count_prs_created;
-			byDateLabels[dateLabel][row.username].count_prs_reviewed +=
-				row.count_prs_reviewed;
+
+			if (startDate) {
+				byDateLabels[dateLabel][row.username].count_prs_created +=
+					row.count_prs_created;
+				byDateLabels[dateLabel][row.username].count_prs_reviewed +=
+					row.count_prs_reviewed;
+			}
 		}
 	}
+
+	const startDateDays = startDate
+		? getDaysBetweenDates(startDate, new Date())
+		: 0;
+
+	const dateRangeOptions = [
+		{ value: "7", label: "last 1 week" },
+		{ value: "14", label: "last 2 weeks" },
+		{ value: "30", label: "last 30 days" },
+		{ value: "60", label: "last 60 days" },
+		{ value: "90", label: "last 90 days" },
+		{ value: "180", label: "last 180 days" },
+		{ value: "365", label: "last year" },
+		{ value: String(365 * 2), label: "last 2 years" },
+	].filter(({ value }, index) => {
+		if (index === 0) return true;
+		const days = Number(value);
+		return days <= startDateDays;
+	});
 
 	const COLORS = [
 		"#7b594e",
@@ -203,9 +247,10 @@ function PRsChart({
 		series.push({ name: "AVERAGE", color: "red.6", strokeDasharray: "5 5" });
 	}
 
-	const range = skipLastInterval
-		? Object.entries(byDateLabels).slice(1, -1)
-		: Object.entries(byDateLabels);
+	const range =
+		skipLastInterval && Object.entries(byDateLabels).length > 4
+			? Object.entries(byDateLabels).slice(1, -1)
+			: Object.entries(byDateLabels);
 
 	// count_prs_created
 	const lineDataCreated = range.map(([dateLabel, record]) => {
@@ -281,18 +326,38 @@ function PRsChart({
 					Options
 				</Title>
 
-				<OptionSection>
-					<SegmentedControl
-						value={dateInterval}
-						onChange={(value) => {
-							setDateInterval(value as "byweek" | "bymonth");
-						}}
-						data={[
-							{ label: "By week", value: "byweek" },
-							{ label: "By month", value: "bymonth" },
-						]}
-					/>
-				</OptionSection>
+				<Grid>
+					<Grid.Col span={4}>
+						<OptionSection>
+							<SegmentedControl
+								value={dateInterval}
+								onChange={(value) => {
+									setDateInterval(value as "byweek" | "bymonth");
+								}}
+								data={[
+									{ label: "By week", value: "byweek" },
+									{ label: "By month", value: "bymonth" },
+								]}
+							/>
+						</OptionSection>
+					</Grid.Col>
+					<Grid.Col span={4}>
+						<OptionSection>
+							{dateRangeOptions.length > 0 && (
+								<Select
+									placeholder="Date range"
+									data={dateRangeOptions}
+									value={`${dateRangeDays}`}
+									onChange={(value: string | null) => {
+										if (value && Number(value)) {
+											setDateRangeDays(Number(value));
+										}
+									}}
+								/>
+							)}
+						</OptionSection>
+					</Grid.Col>
+				</Grid>
 
 				<OptionSection>
 					<UserSelect
@@ -309,6 +374,7 @@ function PRsChart({
 						onChange={(event) =>
 							setSkipLastInterval(event.currentTarget.checked)
 						}
+						disabled={Object.entries(byDateLabels).length <= 4}
 					/>
 				</OptionSection>
 
@@ -363,3 +429,25 @@ function OptionSection({ children }: { children: React.ReactNode }) {
 
 // 	return movingAverages;
 // }
+function getDaysBetweenDates(date1: Date, date2: Date) {
+	// The number of milliseconds in one day
+	const ONE_DAY_MS = 1000 * 60 * 60 * 24;
+
+	// Convert both dates to UTC timestamps by extracting year, month, and day
+	const date1_UTC = Date.UTC(
+		date1.getFullYear(),
+		date1.getMonth(),
+		date1.getDate(),
+	);
+	const date2_UTC = Date.UTC(
+		date2.getFullYear(),
+		date2.getMonth(),
+		date2.getDate(),
+	);
+
+	// Calculate the difference in milliseconds
+	const differenceMs = Math.abs(date2_UTC - date1_UTC);
+
+	// Convert the difference back to days and round the result
+	return Math.round(differenceMs / ONE_DAY_MS);
+}
