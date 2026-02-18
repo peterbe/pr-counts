@@ -4,7 +4,9 @@ import {
 	Box,
 	Button,
 	Container,
+	Grid,
 	LoadingOverlay,
+	SegmentedControl,
 	SimpleGrid,
 	Text,
 	Timeline,
@@ -41,6 +43,14 @@ function ByUsers() {
 	const users = useUsers();
 	const possibleUsernames = users.data ? Object.keys(users.data.users) : [];
 
+	const [eventTypeFilter, setEventTypeFilter] = useSessionStorage<
+		"both" | "created" | "reviewed"
+	>({
+		// key: `pr-counts:events-type-filter:${usernames.join("")}`,
+		key: `pr-counts:events-type-filter`,
+		defaultValue: "both",
+	});
+
 	const usernames =
 		selectedUsers.length > 0 ? selectedUsers : possibleUsernames;
 	const queries = useMultiplePRs(usernames);
@@ -58,6 +68,15 @@ function ByUsers() {
 	};
 	const records = useMemo(() => {
 		const flat: FlatRecord[] = [];
+		let keys: ("created_prs" | "reviewed_prs")[] = [
+			"created_prs",
+			"reviewed_prs",
+		];
+		if (eventTypeFilter === "created") {
+			keys = ["created_prs"];
+		} else if (eventTypeFilter === "reviewed") {
+			keys = ["reviewed_prs"];
+		}
 		queries.forEach((query, index) => {
 			const username = usernames[index];
 			if (selectedUsers.length > 0 && !selectedUsers.includes(username)) {
@@ -65,7 +84,7 @@ function ByUsers() {
 			}
 			const data = query.data as PRsType | undefined;
 			for (const pr of data?.prs || []) {
-				for (const key of ["created_prs", "reviewed_prs"] as const) {
+				for (const key of keys) {
 					for (const prSummary of pr[key]) {
 						flat.push({
 							username,
@@ -78,7 +97,7 @@ function ByUsers() {
 			}
 		});
 		return flat.sort((a, b) => b.date.getTime() - a.date.getTime());
-	}, [queries, usernames, selectedUsers]);
+	}, [queries, usernames, selectedUsers, eventTypeFilter]);
 
 	const userMap: Record<string, UserType> = {};
 	Object.entries(users.data?.users || {}).forEach(([username, user]) => {
@@ -87,9 +106,29 @@ function ByUsers() {
 
 	return (
 		<Box pos="relative">
-			<Title mb={20} order={2}>
-				Recent Events
-			</Title>
+			<Grid mb={30}>
+				<Grid.Col span={8}>
+					<Title order={2}>Recent Events</Title>
+				</Grid.Col>
+				<Grid.Col
+					span={4}
+					style={{ display: "flex", justifyContent: "flex-end" }}
+				>
+					<SegmentedControl
+						value={eventTypeFilter}
+						onChange={(val: string) => {
+							if (["both", "created", "reviewed"].includes(val)) {
+								setEventTypeFilter(val as "both" | "created" | "reviewed");
+							}
+						}}
+						data={[
+							{ label: "Both", value: "both" },
+							{ label: "Created PRs", value: "created" },
+							{ label: "Reviewed PRs", value: "reviewed" },
+						]}
+					/>
+				</Grid.Col>
+			</Grid>
 			<LoadingOverlay visible={queriesLoading} />
 			<ServerError error={users.error || queriesError?.error || null} />
 			<Timeline bulletSize={38} mb={40}>
@@ -104,7 +143,7 @@ function ByUsers() {
 								target="_blank"
 								title={record.summary.title}
 							>
-								{truncate(record.summary.title, 50)}
+								{truncate(record.summary.title, 90)}
 							</Anchor>
 							{record.prType === "reviewed" ? (
 								<Text size="sm" span>
