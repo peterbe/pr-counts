@@ -3,11 +3,20 @@
 ## Get started
 
 You need [Bun](https://bun.com) and [`just`](https://github.com/casey/just) installed.
+You also need a PostgreSQL server. The default `DATABASE_URL` is `postgres://localhost:5432/pr-counts`.
+
+So, first you need to create a postgres database called `pr-counts`
 
 Run:
 
 ```bash
-bun install
+just install
+```
+
+To set up the postgresql table(s), run:
+
+```bash
+just migrate
 ```
 
 Next you need to create a config file called `local-config.json` that is tailored for
