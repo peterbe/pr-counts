@@ -39,7 +39,7 @@ migrate:
     bun run --filter scraper migrate
 
 scrape:
-    bun run packages/scraper/src/index.ts by-config peterbe-config.json
+    bun run packages/scraper/src/index.ts by-config local-config.json
 
 export-json:
     bun run packages/scraper/src/index.ts export-json packages/webapp/public/exports
