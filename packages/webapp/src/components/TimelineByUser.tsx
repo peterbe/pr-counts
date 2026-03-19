@@ -112,7 +112,7 @@ function ByUser({ username }: { username: string }) {
 				<Title order={2}>
 					Timeline for{" "}
 					{thisUser && (
-						<a href={thisUser.html_url} target="_blank">
+						<a href={thisUser.html_url} target="_blank" rel="noopener">
 							@{thisUser.login}
 						</a>
 					)}
@@ -164,7 +164,7 @@ function ByUser({ username }: { username: string }) {
 				bulletSize={24}
 				lineWidth={2}
 			>
-				{flat.map((event, index) => {
+				{flat.map((event) => {
 					let title = "";
 					let icon = <IconGitPullRequest size={12} />;
 					if (event.type === "pr-created") {
@@ -175,11 +175,7 @@ function ByUser({ username }: { username: string }) {
 						title = `Reviewed PR`;
 					}
 					return (
-						<Timeline.Item
-							key={`${event.number}${index}`}
-							bullet={icon}
-							title={title}
-						>
+						<Timeline.Item key={`${event.number}`} bullet={icon} title={title}>
 							<Box c="dimmed">
 								<Anchor href={event.html_url} target="_blank">
 									{event.title}

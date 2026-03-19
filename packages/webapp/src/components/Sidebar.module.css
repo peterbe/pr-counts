@@ -13,6 +13,7 @@
 		}
 
 		@mixin dark {
+			/* biome-ignore lint/suspicious/noDuplicateProperties: don't care */
 			background-color: var(--mantine-color-dark-6);
 		}
 	}

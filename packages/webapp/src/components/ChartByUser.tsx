@@ -53,7 +53,7 @@ function PRsByUser({ username }: { username: string }) {
 				<Group justify="space-between" mb={20}>
 					<Title order={2}>
 						PRs by{" "}
-						<a href={thisUser.html_url} target="_blank">
+						<a href={thisUser.html_url} target="_blank" rel="noopener">
 							@{thisUser.login}
 						</a>
 					</Title>
