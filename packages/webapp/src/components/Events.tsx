@@ -132,7 +132,7 @@ function ByUsers() {
 			<LoadingOverlay visible={queriesLoading} />
 			<ServerError error={users.error || queriesError?.error || null} />
 			<Timeline bulletSize={38} mb={40}>
-				{records.slice(0, slice).map((record, index) => {
+				{records.slice(0, slice).map((record) => {
 					const user = userMap[record.username];
 					const title = (
 						<>
@@ -169,7 +169,7 @@ function ByUsers() {
 						"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png";
 					return (
 						<Timeline.Item
-							key={`${record.username}${record.prType}${record.summary.number}${index}`}
+							key={`${record.username}${record.prType}${record.summary.number}`}
 							title={title}
 							bullet={<Avatar size={36} radius="xl" src={avatarUrl} />}
 						>
