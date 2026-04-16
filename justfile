@@ -28,9 +28,7 @@ test:
     bun run test
 
 upgrade:
-    bun update --interactive
-    bun install
-
+    bun update --interactive --minimum-release-age=86400 && bun install
 
 make-migrations:
     bun run --filter scraper make-migrations
