@@ -66,22 +66,27 @@ async function exportPRCounts(destination: string) {
 }
 
 async function exportUsers(destination: string) {
-	type Select = Pick<SelectUser, "username" | "userdata">;
+	type Select = Pick<SelectUser, "username" | "userdata" | "disabled">;
 	const results: Select[] = await db
 		.select({
 			username: users.username,
 			userdata: users.userdata,
+			disabled: users.disabled,
 		})
 		.from(users)
 		.orderBy(users.username);
 
 	type UserData = Record<string, string | number | boolean>;
-	const userdatas: Record<string, UserData> = {};
+	type UserExport = { userdata: UserData; disabled: boolean };
+	const userdatas: Record<string, UserExport> = {};
 	for (const result of results) {
 		const { username, userdata } = result;
-		userdatas[username] = userdata as unknown as UserData;
+		userdatas[username] = {
+			userdata: userdata as unknown as UserData,
+			disabled: result.disabled,
+		};
 	}
-	const file = join(destination, `users.json`);
+	const file = join(destination, "users.json");
 	await Bun.write(file, JSON.stringify({ users: userdatas }, null, 2));
 	console.log(`Exported ${results.length} records to ${file}`);
 }

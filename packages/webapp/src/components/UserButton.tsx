@@ -19,11 +19,12 @@ export function UserButton({
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isActive =
-		location.pathname === `/user/${user.login}` ||
-		location.pathname === `/user/${user.login}/timeline`;
+		location.pathname === `/user/${user.userdata.login}` ||
+		location.pathname === `/user/${user.userdata.login}/timeline`;
 	return (
 		<UnstyledButton
 			className={classes.user}
+			//   disabled={user.disabled}
 			style={
 				isActive
 					? {
@@ -33,14 +34,14 @@ export function UserButton({
 					: undefined
 			}
 			onClick={() => {
-				navigate(`/user/${user.login}`);
+				navigate(`/user/${user.userdata.login}`);
 			}}
 		>
 			<Group>
 				<Avatar
 					src={
-						user.avatar_url
-							? user.avatar_url
+						user.userdata.avatar_url
+							? user.userdata.avatar_url
 							: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png"
 					}
 					radius="xl"
@@ -48,7 +49,7 @@ export function UserButton({
 
 				<div style={{ flex: 1 }}>
 					<Text size="sm" fw={500}>
-						{user.login}
+						{user.userdata.login}
 					</Text>
 					{counts && (
 						<Text c="dimmed" size="xs">

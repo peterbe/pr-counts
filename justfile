@@ -40,7 +40,7 @@ migrate:
 scrape:
     bun run packages/scraper/src/index.ts by-config local-config.json
 
-export-json:
+export-json: migrate
     bun run packages/scraper/src/index.ts export-json packages/webapp/public/exports
 
 export: export-json

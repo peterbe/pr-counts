@@ -7,7 +7,7 @@ export function GitHubAvatar({
 	textSize,
 	nameOnly = false,
 }: {
-	user: UserType;
+	user: UserType["userdata"];
 	size?: number;
 	textSize?: "xs" | "sm" | "md" | "lg" | "xl";
 	nameOnly?: boolean;

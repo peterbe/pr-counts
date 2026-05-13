@@ -1,10 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 export type UserType = {
-	login: string;
-	html_url: string;
-	site_admin?: boolean;
-	avatar_url: string;
+	userdata: {
+		login: string;
+		html_url: string;
+		site_admin?: boolean;
+		avatar_url: string;
+	};
+	disabled?: boolean;
 };
 export type UsersType = {
 	users: UserType[];

@@ -1,5 +1,6 @@
 import { LineChart, type LineChartSeries } from "@mantine/charts";
 import {
+	Alert,
 	Anchor,
 	Box,
 	Container,
@@ -41,29 +42,32 @@ function PRsByUser({ username }: { username: string }) {
 	const query = usePRCounts();
 	const users = useUsers();
 	const thisUser = Object.values(users.data?.users || {}).find(
-		(u) => u.login === username,
+		(u) => u.userdata.login === username,
 	);
 
 	return (
 		<Box pos="relative">
 			<LoadingOverlay visible={query.isPending || users.isPending} />
 			<ServerError error={users.error || query.error} />
-
+			{thisUser?.disabled && (
+				<Alert variant="light" color="orange" title="User disabled" mb={30}>
+					Stats is no longer collected for this user.
+				</Alert>
+			)}
 			{thisUser && (
 				<Group justify="space-between" mb={20}>
 					<Title order={2}>
 						PRs by{" "}
-						<a href={thisUser.html_url} target="_blank" rel="noopener">
-							@{thisUser.login}
+						<a href={thisUser.userdata.html_url} target="_blank" rel="noopener">
+							@{thisUser.userdata.login}
 						</a>
 					</Title>
 					<Anchor to={`/user/${username}/timeline`} component={Link}>
 						Timeline
 					</Anchor>
-					<GitHubAvatar user={thisUser} size={48} />
+					<GitHubAvatar user={thisUser.userdata} size={48} />
 				</Group>
 			)}
-
 			{query.data && <PRsGrid username={username} data={query.data} />}
 			{query.data && <PRsChart username={username} data={query.data} />}
 		</Box>
@@ -82,7 +86,7 @@ function PRsChart({
 }) {
 	const users = useUsers();
 	const otherUsers = Object.values(users.data?.users || {}).filter(
-		(u) => u.login !== username,
+		(u) => u.userdata.login !== username && !u.disabled,
 	);
 
 	const [dateInterval, setDateInterval] = useLocalStorage<"byweek" | "bymonth">(
@@ -139,7 +143,7 @@ function PRsChart({
 			if (
 				!(
 					row.username === username ||
-					otherUsers.find((u) => u.login === row.username)
+					otherUsers.find((u) => u.userdata.login === row.username)
 				)
 			) {
 				continue;

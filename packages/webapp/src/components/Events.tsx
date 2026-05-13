@@ -151,9 +151,6 @@ function ByUsers() {
 									by{" "}
 								</Text>
 							) : null}
-							{/* {record.prType === "reviewed" && record.summary.user ? (
-								<GitHubAvatar user={record.summary.user} size={24} />
-							) : null} */}
 							{record.prType === "reviewed" && record.summary.user ? (
 								<GitHubAvatar
 									user={record.summary.user}
@@ -165,7 +162,7 @@ function ByUsers() {
 					);
 
 					const avatarUrl =
-						user.avatar_url ||
+						user.userdata.avatar_url ||
 						"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png";
 					return (
 						<Timeline.Item
