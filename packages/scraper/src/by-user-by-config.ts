@@ -6,6 +6,7 @@ import { byUsers } from "./by-user";
 const UserSchema = v.object({
 	username: v.string(),
 	startDate: v.optional(v.string()),
+	disabled: v.optional(v.boolean()),
 });
 
 const ConfigSchema = v.object({
@@ -56,7 +57,7 @@ export async function byUsersByConfig({
 	await byUsers({
 		org,
 		repo,
-		users,
+		users: users.filter((u) => !u.disabled),
 		includeDrafts,
 		daysBack,
 		forceRefresh,
