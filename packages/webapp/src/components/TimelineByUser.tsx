@@ -48,7 +48,7 @@ function ByUser({ username }: { username: string }) {
 	const query = usePRs(username);
 	const users = useUsers();
 	const thisUser = Object.values(users.data?.users || {}).find(
-		(u) => u.login === username,
+		(u) => u.userdata.login === username,
 	);
 	const [daysAgo, setDaysAgo] = useOption<number>(
 		1,
@@ -112,15 +112,15 @@ function ByUser({ username }: { username: string }) {
 				<Title order={2}>
 					Timeline for{" "}
 					{thisUser && (
-						<a href={thisUser.html_url} target="_blank" rel="noopener">
-							@{thisUser.login}
+						<a href={thisUser.userdata.html_url} target="_blank" rel="noopener">
+							@{thisUser.userdata.login}
 						</a>
 					)}
 				</Title>
 				<Anchor to={`/user/${username}`} component={Link}>
 					Charts
 				</Anchor>
-				{thisUser && <GitHubAvatar user={thisUser} size={48} />}
+				{thisUser && <GitHubAvatar user={thisUser.userdata} size={48} />}
 			</Group>
 			<ServerError error={users.error || query.error} />
 			<LoadingOverlay visible={query.isPending || users.isPending} />

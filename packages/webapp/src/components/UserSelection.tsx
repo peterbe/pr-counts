@@ -44,28 +44,30 @@ export function UserSelection() {
 		}
 	}
 
-	const allUsers = Object.values(users.data?.users || {});
+	const allUsers = Object.values(users.data?.users || {}).filter(
+		(u) => !u.disabled,
+	);
 
 	return (
 		<Box pos="relative">
 			<LoadingOverlay visible={query.isPending || users.isPending} />
 			{allUsers.map((user) => {
 				return (
-					<Box mb={20} key={user.login}>
+					<Box mb={20} key={user.userdata.login}>
 						<ImageCheckbox
-							checked={selectedUsers.includes(user.login)}
+							checked={selectedUsers.includes(user.userdata.login)}
 							defaultChecked={false}
 							onChange={(checked) => {
 								if (checked) {
-									setSelectedUsers([...selectedUsers, user.login]);
+									setSelectedUsers([...selectedUsers, user.userdata.login]);
 								} else {
 									setSelectedUsers(
-										selectedUsers.filter((s) => s !== user.login),
+										selectedUsers.filter((s) => s !== user.userdata.login),
 									);
 								}
 							}}
-							title={user.login}
-							image={user.avatar_url}
+							title={user.userdata.login}
+							image={user.userdata.avatar_url}
 						/>
 					</Box>
 				);

@@ -15,6 +15,13 @@
 			"when": 1767378281877,
 			"tag": "0001_peaceful_sphinx",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1778673907655,
+			"tag": "0002_rainy_praxagora",
+			"breakpoints": true
 		}
 	]
 }

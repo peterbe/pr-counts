@@ -14,18 +14,19 @@ export function UserSelect({
 }) {
 	const items = selectable.map((item) => (
 		<ImageCheckbox
-			key={item.login}
-			checked={selected.includes(item.login)}
+			key={item.userdata.login}
+			checked={selected.includes(item.userdata.login)}
+			disabled={item.disabled}
 			defaultChecked={false}
 			onChange={(checked) => {
 				if (checked) {
-					onChange([...selected, item.login]);
+					onChange([...selected, item.userdata.login]);
 				} else {
-					onChange(selected.filter((s) => s !== item.login));
+					onChange(selected.filter((s) => s !== item.userdata.login));
 				}
 			}}
-			title={item.login}
-			image={item.avatar_url}
+			title={item.userdata.login}
+			image={item.userdata.avatar_url}
 		/>
 	));
 	if (selected.length > 0) {

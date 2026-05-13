@@ -7,9 +7,11 @@ export function SidebarUsers() {
 	return (
 		<Box pos="relative">
 			<LoadingOverlay visible={query.isPending} />
-			{Object.values(query.data?.users || {}).map((user) => {
-				return <UserButton key={user.login} user={user} />;
-			})}
+			{Object.values(query.data?.users || {})
+				.filter((u) => !u.disabled)
+				.map((user) => {
+					return <UserButton key={user.userdata.login} user={user} />;
+				})}
 		</Box>
 	);
 }

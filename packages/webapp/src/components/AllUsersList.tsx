@@ -39,9 +39,9 @@ function ListUsers({ data }: { data: UsersType }) {
 	}
 	return Object.values(data.users).map((user) => (
 		<UserButton
-			key={user.login}
+			key={user.userdata.login}
 			user={user}
-			counts={prCounts.get(user.login)}
+			counts={prCounts.get(user.userdata.login)}
 		/>
 	));
 }

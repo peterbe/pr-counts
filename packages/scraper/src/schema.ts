@@ -1,4 +1,5 @@
 import {
+	boolean,
 	integer,
 	jsonb,
 	pgTable,
@@ -27,6 +28,7 @@ export const users = pgTable("users", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
 	username: varchar().notNull(),
 	userdata: jsonb().notNull(),
+	disabled: boolean().notNull().default(false),
 	created: timestamp().notNull().defaultNow(),
 	updated: timestamp().notNull().defaultNow(),
 });

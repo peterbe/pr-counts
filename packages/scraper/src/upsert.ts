@@ -75,7 +75,7 @@ export async function upsertUser(
 	});
 }
 
-async function updateUser(
+export async function updateUser(
 	id: SelectUser["id"],
 	data: Partial<Omit<SelectUser, "id">>,
 ) {

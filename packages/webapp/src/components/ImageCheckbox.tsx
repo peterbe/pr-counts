@@ -55,6 +55,7 @@ export function ImageCheckbox({
 				checked={value}
 				onChange={() => {}}
 				tabIndex={-1}
+				disabled={others.disabled}
 				styles={{ input: { cursor: "pointer" } }}
 			/>
 		</UnstyledButton>

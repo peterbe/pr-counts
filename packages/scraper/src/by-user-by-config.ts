@@ -1,7 +1,11 @@
 import { resolve } from "node:path";
 import type { BunFile } from "bun";
+import { inArray } from "drizzle-orm";
 import * as v from "valibot";
 import { byUsers } from "./by-user";
+import { db } from "./db";
+import { users } from "./schema";
+import { updateUser } from "./upsert";
 
 const UserSchema = v.object({
 	username: v.string(),
@@ -54,6 +58,8 @@ export async function byUsersByConfig({
 			? (config["days-back"] as number)
 			: Number(daysBack ?? DEFAULT_DAYS_BACK);
 
+	await toggleDisabledUsers(users);
+
 	await byUsers({
 		org,
 		repo,
@@ -64,6 +70,33 @@ export async function byUsersByConfig({
 		sleepSeconds,
 		date,
 	});
+}
+
+async function toggleDisabledUsers(allUsers: ConfigData["users"]) {
+	const map = new Map(allUsers.map((u) => [u.username, u.disabled]));
+	const query = db
+		.select()
+		.from(users)
+		.where(
+			inArray(
+				users.username,
+				allUsers.map((u) => u.username),
+			),
+		);
+	for (const row of await query) {
+		if (row.disabled !== Boolean(map.get(row.username))) {
+			await updateUser(row.id, {
+				disabled: Boolean(map.get(row.username)),
+				updated: new Date(),
+			});
+			console.log(
+				"Toggled",
+				row.username,
+				"to disabled =",
+				Boolean(map.get(row.username)),
+			);
+		}
+	}
 }
 
 function getConfigFromRaw(raw: object): ConfigData {
