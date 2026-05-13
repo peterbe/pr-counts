@@ -16,7 +16,8 @@
 			"!bun.lock",
 			"!.github",
 			"!dummy*",
-			"!packages/webapp/dist"
+			"!packages/webapp/dist",
+			"!packages/webapp/public/exports"
 		]
 	},
 	"formatter": {
