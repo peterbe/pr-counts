@@ -4,11 +4,11 @@
 
 
 tsc:
-    bun run tsc
+    bun run --filter scraper tsc
+    bun run --filter webapp tsc
 
-lint:
+lint: tsc
     bun run lint
-    bun run tsc
 
 lintfix:
     bun run lint:fix
@@ -28,7 +28,8 @@ test:
     bun run test
 
 upgrade:
-    bun update --interactive --minimum-release-age=86400 && bun install
+    bun update --filter scraper --interactive --minimum-release-age=86400 && bun install
+    bun update --filter webapp --interactive --minimum-release-age=86400 && bun install
 
 make-migrations:
     bun run --filter scraper make-migrations
