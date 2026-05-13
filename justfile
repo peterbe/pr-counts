@@ -4,8 +4,8 @@
 
 
 tsc:
-    cd packages/scraper && bun run tsc
-    cd packages/webapp && bun run tsc
+    bun run --filter scraper tsc
+    bun run --filter webapp tsc
 
 lint: tsc
     bun run lint

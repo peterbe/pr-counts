@@ -4,7 +4,8 @@
 	"type": "module",
 	"scripts": {
 		"migrate": "drizzle-kit migrate",
-		"make-migrations": "drizzle-kit generate"
+		"make-migrations": "drizzle-kit generate",
+		"tsc": "tsc"
 	},
 	"devDependencies": {
 		"@types/pg": "^8.20.0",
