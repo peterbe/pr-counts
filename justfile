@@ -4,11 +4,11 @@
 
 
 tsc:
-    bun run tsc
+    cd packages/scraper && bun run tsc
+    cd packages/webapp && bun run tsc
 
-lint:
+lint: tsc
     bun run lint
-    bun run tsc
 
 lintfix:
     bun run lint:fix
