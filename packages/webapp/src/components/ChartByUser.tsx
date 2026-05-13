@@ -192,6 +192,8 @@ function PRsChart({
 		{ value: "30", label: "last 30 days" },
 		{ value: "60", label: "last 60 days" },
 		{ value: "90", label: "last 90 days" },
+		{ value: "120", label: "last 120 days" },
+		{ value: "150", label: "last 150 days" },
 		{ value: "180", label: "last 180 days" },
 		{ value: "365", label: "last year" },
 		{ value: String(365 * 2), label: "last 2 years" },
