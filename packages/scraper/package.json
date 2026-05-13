@@ -8,16 +8,16 @@
 	},
 	"devDependencies": {
 		"@types/pg": "^8.20.0",
-		"drizzle-kit": "^0.31.8"
+		"drizzle-kit": "^0.31.10"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
 	},
 	"dependencies": {
 		"commander": "^14.0.3",
-		"drizzle-orm": "^0.45.1",
+		"drizzle-orm": "^0.45.2",
 		"octokit": "^5.0.5",
 		"pg": "^8.20.0",
-		"valibot": "^1.2.0"
+		"valibot": "^1.4.0"
 	}
 }
