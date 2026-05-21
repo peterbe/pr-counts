@@ -104,6 +104,10 @@ function PRsChart({
 		key: `pr-counts:skip-last-interval:${username}`,
 		defaultValue: false,
 	});
+	const [cummulative, setCummulative] = useLocalStorage<boolean>({
+		key: `pr-counts:cummulative:${username}`,
+		defaultValue: false,
+	});
 
 	const [dateRangeDays, setDateRangeDays] = useLocalStorage<number>({
 		key: `pr-counts:date-range:${username}`,
@@ -182,6 +186,33 @@ function PRsChart({
 					row.count_prs_created;
 				byDateLabels[dateLabel][row.username].count_prs_reviewed +=
 					row.count_prs_reviewed;
+			}
+		}
+	}
+
+	if (cummulative) {
+		const previousByUser: Record<
+			string,
+			{
+				count_prs_created: number;
+				count_prs_reviewed: number;
+			}
+		> = {};
+
+		for (const record of Object.values(byDateLabels)) {
+			console.log(record);
+			for (const [user, counts] of Object.entries(record)) {
+				if (!(user in previousByUser)) {
+					previousByUser[user] = {
+						count_prs_created: 0,
+						count_prs_reviewed: 0,
+					};
+				}
+				counts.count_prs_created += previousByUser[user].count_prs_created;
+				counts.count_prs_reviewed += previousByUser[user].count_prs_reviewed;
+
+				previousByUser[user].count_prs_created = counts.count_prs_created;
+				previousByUser[user].count_prs_reviewed = counts.count_prs_reviewed;
 			}
 		}
 	}
@@ -381,6 +412,14 @@ function PRsChart({
 							setSkipLastInterval(event.currentTarget.checked)
 						}
 						disabled={Object.entries(byDateLabels).length <= 4}
+					/>
+				</OptionSection>
+				<OptionSection>
+					<Switch
+						label="Cummulative numbers"
+						checked={cummulative}
+						onChange={(event) => setCummulative(event.currentTarget.checked)}
+						// disabled={Object.entries(byDateLabels).length <= 4}
 					/>
 				</OptionSection>
 
