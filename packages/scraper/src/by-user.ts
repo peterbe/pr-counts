@@ -7,6 +7,7 @@ import { upsertPR, upsertUser } from "./upsert";
 type UserConfig = {
 	username: string;
 	startDate?: string;
+	team?: string;
 };
 
 export async function byUsers({
@@ -35,6 +36,7 @@ export async function byUsers({
 	type Task = {
 		username: string;
 		created: Date;
+		team?: string;
 	};
 	const tasks: Task[] = [];
 	const skips: Task[] = [];
@@ -51,6 +53,10 @@ export async function byUsers({
 				typeof usernameOrConfig === "string"
 					? undefined
 					: usernameOrConfig.startDate;
+			const team =
+				typeof usernameOrConfig === "string"
+					? undefined
+					: usernameOrConfig.team;
 			if (startDate) {
 				const startDateObj = new Date(startDate);
 				if (created < startDateObj) {
@@ -74,6 +80,7 @@ export async function byUsers({
 			tasks.push({
 				username,
 				created,
+				team,
 			});
 		}
 	}
@@ -81,7 +88,7 @@ export async function byUsers({
 		console.log("Skipped tasks:", skips.length);
 	}
 	console.log("Total tasks to process:", tasks.length);
-	for (const { created, username } of tasks) {
+	for (const { created, username, team } of tasks) {
 		console.log("Fetching data for", [created, formatDate(created), username]);
 		await byUserByDate({
 			username,
@@ -89,6 +96,7 @@ export async function byUsers({
 			org,
 			repo,
 			includeDrafts,
+			team,
 		});
 		if (sleepSeconds > 0) {
 			console.log("Sleeping for", sleepSeconds, "seconds...");
@@ -103,12 +111,14 @@ async function byUserByDate({
 	org,
 	repo,
 	includeDrafts = false,
+	team,
 }: {
 	username: string;
 	created: Date;
 	org: string;
 	repo: string;
 	includeDrafts?: boolean;
+	team?: string;
 }) {
 	const octokit = getOctokit();
 
@@ -154,7 +164,7 @@ async function byUserByDate({
 					userData[key] = value;
 				}
 			}
-			await upsertUser(username, userData);
+			await upsertUser(username, userData, team);
 		}
 	}
 

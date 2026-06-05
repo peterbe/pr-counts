@@ -200,7 +200,6 @@ function PRsChart({
 		> = {};
 
 		for (const record of Object.values(byDateLabels)) {
-			console.log(record);
 			for (const [user, counts] of Object.entries(record)) {
 				if (!(user in previousByUser)) {
 					previousByUser[user] = {
