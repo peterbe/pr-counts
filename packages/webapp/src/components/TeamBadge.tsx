@@ -21,11 +21,17 @@ function getTeamColor(team: string): string {
 	return TEAM_COLORS[hashStringToInt(team) % TEAM_COLORS.length];
 }
 
-export function TeamBadge({ team }: { team: string }) {
+export function TeamBadge({
+	team,
+	size,
+}: {
+	team: string;
+	size?: "xs" | "sm" | "md" | "lg" | "xl";
+}) {
 	const color = getTeamColor(team);
 
 	return (
-		<Badge variant="white" color={color} size="sm">
+		<Badge variant="white" color={color} size={size}>
 			{team}
 		</Badge>
 	);
