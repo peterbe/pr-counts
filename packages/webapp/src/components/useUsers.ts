@@ -8,6 +8,7 @@ export type UserType = {
 		avatar_url: string;
 	};
 	disabled?: boolean;
+	team?: string | null;
 };
 export type UsersType = {
 	users: UserType[];

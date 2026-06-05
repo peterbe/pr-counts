@@ -66,24 +66,30 @@ async function exportPRCounts(destination: string) {
 }
 
 async function exportUsers(destination: string) {
-	type Select = Pick<SelectUser, "username" | "userdata" | "disabled">;
+	type Select = Pick<SelectUser, "username" | "userdata" | "disabled" | "team">;
 	const results: Select[] = await db
 		.select({
 			username: users.username,
 			userdata: users.userdata,
 			disabled: users.disabled,
+			team: users.team,
 		})
 		.from(users)
 		.orderBy(users.username);
 
 	type UserData = Record<string, string | number | boolean>;
-	type UserExport = { userdata: UserData; disabled: boolean };
+	type UserExport = {
+		userdata: UserData;
+		disabled: boolean;
+		team: string | null;
+	};
 	const userdatas: Record<string, UserExport> = {};
 	for (const result of results) {
 		const { username, userdata } = result;
 		userdatas[username] = {
 			userdata: userdata as unknown as UserData,
 			disabled: result.disabled,
+			team: result.team,
 		};
 	}
 	const file = join(destination, "users.json");
