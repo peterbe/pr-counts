@@ -10,7 +10,6 @@ import {
 } from "./schema";
 
 export async function upsertPR(data: InsertPR) {
-	// console.debug("UPSERT", [data.date, data.org, data.repo, data.username]);
 	const startOfDay = new Date(data.date);
 	startOfDay.setHours(0, 0, 0, 0);
 	const endOfDay = new Date(data.date);
@@ -57,6 +56,7 @@ async function insertPR(data: InsertPR) {
 export async function upsertUser(
 	username: string,
 	userData: Record<string, string | number | boolean>,
+	team?: string,
 ) {
 	const query = db.select().from(users).where(eq(users.username, username));
 	for (const row of await query) {
@@ -64,6 +64,7 @@ export async function upsertUser(
 		await updateUser(id, {
 			userdata: userData as InsertUser["userdata"],
 			updated: new Date(),
+			team,
 		});
 		return;
 	}
@@ -72,6 +73,7 @@ export async function upsertUser(
 		userdata: userData as InsertUser["userdata"],
 		updated: new Date(),
 		created: new Date(),
+		team,
 	});
 }
 

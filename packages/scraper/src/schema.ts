@@ -27,6 +27,7 @@ export type SelectPR = typeof prsTable.$inferSelect;
 export const users = pgTable("users", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
 	username: varchar().notNull(),
+	team: varchar(),
 	userdata: jsonb().notNull(),
 	disabled: boolean().notNull().default(false),
 	created: timestamp().notNull().defaultNow(),

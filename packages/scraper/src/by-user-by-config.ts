@@ -11,6 +11,7 @@ const UserSchema = v.object({
 	username: v.string(),
 	startDate: v.optional(v.string()),
 	disabled: v.optional(v.boolean()),
+	team: v.optional(v.string()),
 });
 
 const ConfigSchema = v.object({
@@ -50,15 +51,20 @@ export async function byUsersByConfig({
 	const { org, repo, users } = config;
 
 	sleepSeconds =
-		"sleep-seconds" in config
-			? (config["sleep-seconds"] as number)
-			: Number(sleepSeconds ?? DEFAULT_SLEEP_SECONDS);
+		sleepSeconds !== null
+			? Number(sleepSeconds)
+			: "sleep-seconds" in config
+				? (config["sleep-seconds"] as number)
+				: DEFAULT_SLEEP_SECONDS;
 	daysBack =
-		"days-back" in config
-			? (config["days-back"] as number)
-			: Number(daysBack ?? DEFAULT_DAYS_BACK);
+		daysBack !== null
+			? Number(daysBack)
+			: "days-back" in config
+				? (config["days-back"] as number)
+				: DEFAULT_DAYS_BACK;
 
 	await toggleDisabledUsers(users);
+	await toggleTeamUsers(users);
 
 	await byUsers({
 		org,
@@ -95,6 +101,28 @@ async function toggleDisabledUsers(allUsers: ConfigData["users"]) {
 				"to disabled =",
 				Boolean(map.get(row.username)),
 			);
+		}
+	}
+}
+
+async function toggleTeamUsers(allUsers: ConfigData["users"]) {
+	const map = new Map(allUsers.map((u) => [u.username, u.team]));
+	const query = db
+		.select()
+		.from(users)
+		.where(
+			inArray(
+				users.username,
+				allUsers.map((u) => u.username),
+			),
+		);
+	for (const row of await query) {
+		if (row.team !== map.get(row.username)) {
+			await updateUser(row.id, {
+				team: map.get(row.username),
+				updated: new Date(),
+			});
+			console.log("Toggled", row.username, "to team =", map.get(row.username));
 		}
 	}
 }
