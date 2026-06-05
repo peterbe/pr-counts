@@ -19,6 +19,7 @@ import { GeneralAppShell } from "./GeneralAppShell";
 import { GitHubAvatar } from "./GitHubAvatar";
 import { PRsGrid } from "./PRsGrid";
 import { ServerError } from "./ServerError";
+import { TeamBadge } from "./TeamBadge";
 import { UserSelect } from "./UserSelect";
 import { useOption } from "./useOption";
 import { type PRCountsType, usePRCounts } from "./usePRCounts";
@@ -62,6 +63,7 @@ function PRsByUser({ username }: { username: string }) {
 							@{thisUser.userdata.login}
 						</a>
 					</Title>
+					{thisUser.team && <TeamBadge team={thisUser.team} />}
 					<Anchor to={`/user/${username}/timeline`} component={Link}>
 						Timeline
 					</Anchor>
@@ -237,16 +239,21 @@ function PRsChart({
 		return days <= startDateDays;
 	});
 
-	const COLORS = [
-		"#7b594e",
-		"#a17f74",
-		"#d2c9c6",
-		"#896459",
-		"#bdaaa4",
-		"#9d766a",
-		"#ab9087",
-		"#e8e6e5",
-	];
+	const COLORS = `
+	#1F77B4
+	#D62728
+	#2CA02C
+	#9467BD
+	#FF7F0E
+	#17BECF
+	#8C564B
+	#E377C2
+	#BCBD22
+	#7F7F7F
+	`
+		.trim()
+		.split("\n")
+		.map((s) => s.trim());
 
 	if (includeAverage && compareUsers.length > 0) {
 		for (const [dateLabel, record] of Object.entries(byDateLabels)) {
