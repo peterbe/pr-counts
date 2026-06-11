@@ -280,7 +280,8 @@ function PRsChart({
 	}
 
 	const series: LineChartSeries[] = [
-		{ name: username, color: "blue.6" },
+		// { name: username, color: "blue.6" },
+		{ name: username, color: "rgba(194, 124, 25, 1)" },
 		...compareUsers.map((u, index) => ({
 			name: u,
 			color: COLORS[index % COLORS.length],
@@ -345,6 +346,7 @@ function PRsChart({
 					type={compareUsers.length === 0 ? "gradient" : undefined}
 					gradientStops={compareUsers.length === 0 ? gradientStops : undefined}
 					withLegend={compareUsers.length > 0}
+					strokeWidth={2.7}
 				/>
 			</Box>
 			<Box mb={40}>
@@ -361,6 +363,7 @@ function PRsChart({
 					type={compareUsers.length === 0 ? "gradient" : undefined}
 					gradientStops={compareUsers.length === 0 ? gradientStops : undefined}
 					withLegend={compareUsers.length > 0}
+					strokeWidth={2.7}
 				/>
 			</Box>
 
