@@ -1,11 +1,17 @@
-import { Box, LoadingOverlay, SegmentedControl } from "@mantine/core";
-import { useLocalStorage } from "@mantine/hooks";
+import { Box, LoadingOverlay, SegmentedControl, Switch } from "@mantine/core";
+import { useDocumentTitle, useLocalStorage } from "@mantine/hooks";
 import { type SimplePRCountsType, UserButton } from "./UserButton";
 import { usePRCounts } from "./usePRCounts";
 import { type UsersType, useUsers } from "./useUsers";
 
 export function AllUsersList() {
 	const query = useUsers();
+
+	useDocumentTitle(
+		query.data
+			? `All ${Object.keys(query.data.users).length} users`
+			: "All users",
+	);
 
 	return (
 		<Box pos="relative">
@@ -22,8 +28,19 @@ function ListUsers({ data }: { data: UsersType }) {
 		key: "all-users-sort-option",
 		defaultValue: "name",
 	});
+	const [includeDisabledUsers, setIncludeDisabledUsers] =
+		useLocalStorage<boolean>({
+			key: "all-users-include-disabled",
+			defaultValue: false,
+		});
 
-	if (Object.keys(data.users).length === 0) {
+	const includedUsers = Object.fromEntries(
+		Object.entries(data.users)
+			.filter(([_, u]) => includeDisabledUsers || !u.disabled)
+			.map(([key, u]) => [key, u]),
+	);
+
+	if (Object.keys(includedUsers).length === 0) {
 		return <div>No users found</div>;
 	}
 
@@ -57,7 +74,7 @@ function ListUsers({ data }: { data: UsersType }) {
 		sortOptions.push({ label: "Sort by Team", value: "team" });
 	}
 
-	const users = Object.values(data.users);
+	const users = Object.values(includedUsers);
 
 	if (sortOption === "name") {
 		users.sort((a, b) => a.userdata.login.localeCompare(b.userdata.login));
@@ -83,11 +100,24 @@ function ListUsers({ data }: { data: UsersType }) {
 				/>
 			))}
 			{sortOptions.length > 1 && (
-				<SegmentedControl
-					value={sortOption}
-					onChange={setSortOption}
-					data={sortOptions}
-				/>
+				<Box mt="md">
+					<SegmentedControl
+						value={sortOption}
+						onChange={setSortOption}
+						data={sortOptions}
+					/>
+				</Box>
+			)}
+			{Object.keys(includedUsers).length > 0 && (
+				<Box mt="md">
+					<Switch
+						label="Included disabled users"
+						checked={includeDisabledUsers}
+						onChange={(event) =>
+							setIncludeDisabledUsers(event.currentTarget.checked)
+						}
+					/>
+				</Box>
 			)}
 		</Box>
 	);

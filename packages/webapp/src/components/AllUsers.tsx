@@ -1,13 +1,11 @@
 import { AppShell, Group } from "@mantine/core";
-import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { AllUsersList } from "./AllUsersList";
 import { BasicHeader } from "./BasicHeader";
 import { SidebarUsers } from "./SidebarUsers";
 
 export function AllUsers() {
 	const [opened] = useDisclosure();
-
-	useDocumentTitle("All users");
 
 	return (
 		<AppShell
