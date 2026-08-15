@@ -1,6 +1,7 @@
 import { Avatar, Group, Text, UnstyledButton } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { useLocation, useNavigate } from "react-router";
+import { DisabledUserBadge } from "./DisabledUserBadge";
 import { TeamBadge } from "./TeamBadge";
 import classes from "./UserButton.module.css";
 import type { UserType } from "./useUsers";
@@ -58,6 +59,7 @@ export function UserButton({
 							{counts.count_prs_reviewed} PRs reviewed in total
 						</Text>
 					)}
+					{user.disabled && <DisabledUserBadge user={user} />}
 					{user.team && <TeamBadge team={user.team} />}
 				</div>
 

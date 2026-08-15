@@ -61,7 +61,7 @@ export function UserSelect({
 					{getItems(selectableByTeam[""])}
 				</SimpleGrid>
 			)}
-			{selected.length && (
+			{selected.length > 0 && (
 				<UnstyledButton
 					key="__clear"
 					onClick={() => {
