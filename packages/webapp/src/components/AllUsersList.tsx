@@ -49,6 +49,9 @@ function ListUsers({ data }: { data: UsersType }) {
 		if (prs.data) {
 			for (const countsArray of Object.values(prs.data)) {
 				for (const counts of countsArray) {
+					if (!(counts.username in includedUsers)) {
+						continue;
+					}
 					prCounts.set(counts.username, {
 						count_prs_created:
 							counts.count_prs_created +
