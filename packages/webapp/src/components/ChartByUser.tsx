@@ -371,7 +371,6 @@ function PRsChart({
 				<Title order={4} mb={20}>
 					Options
 				</Title>
-
 				<Grid>
 					<Grid.Col span={4}>
 						<OptionSection>
@@ -404,7 +403,6 @@ function PRsChart({
 						</OptionSection>
 					</Grid.Col>
 				</Grid>
-
 				<OptionSection>
 					<UserSelect
 						selected={compareUsers}
@@ -412,7 +410,6 @@ function PRsChart({
 						onChange={setCompareUsers}
 					/>
 				</OptionSection>
-
 				<OptionSection>
 					<Switch
 						label="Skip first and last date interval (incomplete data)"
@@ -431,7 +428,6 @@ function PRsChart({
 						// disabled={Object.entries(byDateLabels).length <= 4}
 					/>
 				</OptionSection>
-
 				<OptionSection>
 					<Switch
 						label="Include average line"
@@ -440,7 +436,6 @@ function PRsChart({
 						onChange={(event) => setIncludeAverage(event.currentTarget.checked)}
 					/>
 				</OptionSection>
-
 				<OptionSection>
 					<SegmentedControl
 						withItemsBorders={false}

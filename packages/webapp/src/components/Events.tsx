@@ -41,7 +41,14 @@ const SLICE_INCREMENT = 50;
 function ByUsers() {
 	const [selectedUsers] = useSelectedUsers();
 	const users = useUsers();
-	const possibleUsernames = users.data ? Object.keys(users.data.users) : [];
+	if (users.data) {
+		console.log("users", users.data?.users);
+	}
+	const possibleUsernames = users.data
+		? Object.entries(users.data.users)
+				.filter(([_, u]) => !u.disabled)
+				.map(([username]) => username)
+		: [];
 
 	const [eventTypeFilter, setEventTypeFilter] = useSessionStorage<
 		"both" | "created" | "reviewed"
