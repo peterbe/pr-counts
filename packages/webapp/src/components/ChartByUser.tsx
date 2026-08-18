@@ -87,8 +87,16 @@ function PRsChart({
 	data: PRCountsType;
 }) {
 	const users = useUsers();
+
+	const [includeDisabledUsers, setIncludeDisabledUsers] =
+		useLocalStorage<boolean>({
+			key: `pr-counts:compare-users-include-disabled:${username}`,
+			defaultValue: false,
+		});
+
 	const otherUsers = Object.values(users.data?.users || {}).filter(
-		(u) => u.userdata.login !== username && !u.disabled,
+		(u) =>
+			u.userdata.login !== username && (!u.disabled || includeDisabledUsers),
 	);
 
 	const [dateInterval, setDateInterval] = useLocalStorage<"byweek" | "bymonth">(
@@ -402,12 +410,22 @@ function PRsChart({
 							)}
 						</OptionSection>
 					</Grid.Col>
+					<Grid.Col span={4}>
+						<Switch
+							label="Include disabled users"
+							checked={includeDisabledUsers}
+							onChange={(event) =>
+								setIncludeDisabledUsers(event.currentTarget.checked)
+							}
+						/>
+					</Grid.Col>
 				</Grid>
 				<OptionSection>
 					<UserSelect
 						selected={compareUsers}
 						selectable={otherUsers}
 						onChange={setCompareUsers}
+						includeDisabledUsers={includeDisabledUsers}
 					/>
 				</OptionSection>
 				<OptionSection>
