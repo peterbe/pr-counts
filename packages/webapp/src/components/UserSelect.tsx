@@ -8,10 +8,12 @@ export function UserSelect({
 	selected,
 	selectable,
 	onChange,
+	includeDisabledUsers,
 }: {
 	selected: string[];
 	selectable: UserType[];
 	onChange: (selected: string[]) => void;
+	includeDisabledUsers?: boolean;
 }) {
 	const selectableByTeam: Record<string, UserType[]> = {};
 	for (const s of selectable) {
@@ -27,7 +29,7 @@ export function UserSelect({
 			<ImageCheckbox
 				key={item.userdata.login}
 				checked={selected.includes(item.userdata.login)}
-				disabled={item.disabled}
+				disabled={includeDisabledUsers ? false : item.disabled}
 				defaultChecked={false}
 				onChange={(checked) => {
 					if (checked) {
