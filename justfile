@@ -30,7 +30,6 @@ test:
 upgrade:
     bun update --filter scraper --interactive --minimum-release-age=86400 && bun install
     bun update --filter webapp --interactive --minimum-release-age=86400 && bun install
-    bun update --filter server --interactive --minimum-release-age=86400 && bun install
 
 make-migrations:
     bun run --filter scraper make-migrations
