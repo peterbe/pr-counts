@@ -16,7 +16,7 @@ jobs:
       # https://github.com/bmizerany/setup-postgres/issues/6
       - run: mkdir -p $HOME/.local
       # https://github.com/bmizerany/setup-postgres?tab=readme-ov-file#environment-configuration
-      - uses: bmizerany/setup-postgres@v3
+      - uses: bmizerany/setup-postgres@v4
       # Annoyingly, the bmizerany/setup-postgres tries to set the env var in a way
       # that doesn't work for subsequent steps. So we have to set it ourselves.
       - run: 'echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres" >> "$GITHUB_ENV"'
