@@ -35,7 +35,7 @@
         "@mantine/charts": "^9.7.3",
         "@mantine/core": "^9.7.3",
         "@mantine/hooks": "^9.7.3",
-        "@mantine/notifications": "^9.7.3",
+        "@mantine/notifications": "^9.7.4",
         "@tabler/icons-react": "^3.46.0",
         "@tanstack/react-query": "^5.102.8",
         "date-fns": "^4.4.0",
@@ -153,9 +153,9 @@
 
     "@mantine/hooks": ["@mantine/hooks@9.7.3", "", { "peerDependencies": { "react": "^19.2.0" } }, "sha512-GMHoMS1qul1dBLIHd/N9ef2Pr8UKYYHfuM+g2ej3gYqU0kH4sTiR9FNHksoTQi0PzATRoaNlUYjjMe9rbDRw5A=="],
 
-    "@mantine/notifications": ["@mantine/notifications@9.7.3", "", { "dependencies": { "@mantine/store": "9.7.3", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "9.7.3", "@mantine/hooks": "9.7.3", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-ebsyKnA9oYYOtRwPD8uO2mQvHsJC3nlOt0hJsciFV+zMaS9OIoONDVN8nD5HvuAVe0UWTxxZ3i8jw7QEs4rxEA=="],
+    "@mantine/notifications": ["@mantine/notifications@9.7.4", "", { "dependencies": { "@mantine/store": "9.7.4", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "9.7.4", "@mantine/hooks": "9.7.4", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-LabOPnE/YtdpXHn49ZJjiJJBYnYXUMi6SFuzxje7XxpoxImZ+wdGh4R/+l89NnWTxKwGoQL51iUTL8PSgu2A1Q=="],
 
-    "@mantine/store": ["@mantine/store@9.7.3", "", { "peerDependencies": { "react": "^19.2.0" } }, "sha512-Z8BD1cw4LxSrH7l0zzVeFntzcYzO4vTP/I5aezizKdar6nbeladQKQnsBV2aReamp05vlVybZG3IKQdRBfXrOg=="],
+    "@mantine/store": ["@mantine/store@9.7.4", "", { "peerDependencies": { "react": "^19.2.0" } }, "sha512-tICEOzsaV2eiV4QAegdErRLtfd0da02DKqsEIzJLa+8T5dWDnBMCqlWxHfBMnaL7HBAmpx41koad0zUZPGw7pg=="],
 
     "@octokit/app": ["@octokit/app@16.1.2", "", { "dependencies": { "@octokit/auth-app": "^8.1.2", "@octokit/auth-unauthenticated": "^7.0.3", "@octokit/core": "^7.0.6", "@octokit/oauth-app": "^8.0.3", "@octokit/plugin-paginate-rest": "^14.0.0", "@octokit/types": "^16.0.0", "@octokit/webhooks": "^14.0.0" } }, "sha512-8j7sEpUYVj18dxvh0KWj6W/l6uAiVRBl1JBDVRqH1VHKAO/G5eRVl4yEoYACjakWers1DjUkcCHyJNQK47JqyQ=="],
 
